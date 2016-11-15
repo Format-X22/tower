@@ -1,0 +1,3 @@
+class Polo
+	#
+end
