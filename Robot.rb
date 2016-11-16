@@ -1,3 +1,4 @@
+require 'Date'
 require 'BigDecimal'
 require_relative 'Polo'
 require_relative 'Database'
@@ -11,7 +12,7 @@ class Robot
 		@pairs = pairs
 
 		Database.connect
-		Polo.set_auth(key, secret)
+		Polo.auth(key, secret)
 
 		while true
 			begin
@@ -53,7 +54,7 @@ class Robot
 		end
 
 		unless @orders["BTC_#{pair}"].length
-			next_state(meta)
+			next_state(pair, meta)
 		end
 
 		order = @orders["BTC_#{pair}"][0]
@@ -61,7 +62,7 @@ class Robot
 		trade_by_state(meta, low, order)
 	end
 
-	def next_state(meta)
+	def next_state(pair, meta)
 		case meta.state
 			when 'buy'
 				meta.state = 'hold'
@@ -74,13 +75,13 @@ class Robot
 				# do nothing
 		end
 
-		Polo.meta(pair, meta)
+		Database.meta(pair, meta)
 	end
 
 	def trade_by_state(meta, low, order)
 		case meta.state
 			when 'buy'
-				rate = Polo.getGlass(pair)[0][0]
+				rate = Polo.glass(pair)[0][0]
 				btc = @money['BTC']
 				amount = BigDecimal.new(btc) / rate
 
