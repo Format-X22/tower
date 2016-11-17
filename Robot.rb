@@ -8,11 +8,10 @@ class Robot
 	TRADE_INTERVAL = 60 * 60
 	TOP_PRICE = BigDecimal.new(2.97)
 
-	def initialize (key, secret, pairs)
-		@pairs = pairs
-
-		Database.connect
-		Polo.auth(key, secret)
+	def initialize (key, secret, db_name)
+		@polo = Polo.new(key, secret)
+		@database = Database.new(db_name)
+		@pairs = @database.pairs
 
 		while true
 			begin
@@ -35,18 +34,18 @@ class Robot
 	end
 
 	def extract_shared_data
-		@money = Polo.money
-		@orders = Polo.orders
+		@money = @polo.money
+		@orders = @polo.orders
 
-		candles = Polo.candles('USDT')
-		meta = Database.meta('USDT')
+		candles = @polo.candles('USDT')
+		meta = @database.meta('USDT')
 		low = actualize_low('USDT', meta.low, candles)
 
 		@usd_sigma = low / candles.last.weightedAverage
 	end
 
 	def trade_pair(pair)
-		meta = Database.meta(pair)
+		meta = @database.meta(pair)
 		low = actualize_low(pair, meta.low)
 
 		if meta.calm and meta.calm > Date.today
@@ -75,31 +74,31 @@ class Robot
 				# do nothing
 		end
 
-		Database.meta(pair, meta)
+		@database.meta(pair, meta)
 	end
 
 	def trade_by_state(meta, low, order)
 		case meta.state
 			when 'buy'
-				rate = Polo.glass(pair)[0][0]
+				rate = @polo.glass(pair)[0][0]
 				btc = @money['BTC']
 				amount = BigDecimal.new(btc) / rate
 
 				if order
-					Polo.replace(order.orderNumber, rate, amount)
+					@polo.replace(order.orderNumber, rate, amount)
 				else
-					Polo.buy(rate, amount)
+					@polo.buy(pair, rate, amount)
 					meta.low = nil
-					Database.meta(pair, meta)
+					@database.meta(pair, meta)
 				end
 			when 'hold'
 				rate = low * TOP_PRICE * @usd_sigma
 				amount = @money[pair]
 
 				if order
-					Polo.replace(order.orderNumber, rate, amount)
+					@polo.replace(order.orderNumber, rate, amount)
 				else
-					Polo.sell(rate, amount)
+					@polo.sell(pair, rate, amount)
 				end
 			when 'calm'
 				# do nothing
@@ -109,7 +108,7 @@ class Robot
 	end
 
 	def actualize_low(pair, meta_low, *candles)
-		candles = Polo.candles(pair) unless candles
+		candles = @polo.candles(pair) unless candles
 		low = calc_low(candles)
 
 		if meta_low and low > meta_low
@@ -117,7 +116,7 @@ class Robot
 		end
 
 		if low != meta_low
-			Database.meta(pair, {:low => low})
+			@database.meta(pair, {:low => low})
 		end
 
 		BigDecimal.new(low)
