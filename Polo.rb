@@ -6,6 +6,7 @@ require 'json'
 
 class Polo
 	CANDLES_MARGIN = 2 * 60 * 60
+	HISTORY_MARGIN = 7 * 24 * 60 * 60
 	CANDLES_END = 9999999999
 	CANDLES_PERIOD = 300
 
@@ -24,7 +25,7 @@ class Polo
 		public_api_call({
 			:command => 'returnChartData',
 			:currencyPair => currency_pair,
-			:start => (Time.now - CANDLES_MARGIN).to_i,
+			:start => margin(CANDLES_MARGIN),
 			:end => CANDLES_END,
 			:period => CANDLES_PERIOD
 						})
@@ -49,6 +50,14 @@ class Polo
 		private_api_call({
 			:command => 'returnOpenOrders',
 			:currencyPair => 'all'
+						 })
+	end
+
+	def history(pair)
+		private_api_call({
+			:command => 'returnTradeHistory',
+			:currencyPair => "BTC_#{pair}",
+			:start => margin(HISTORY_MARGIN),
 						 })
 	end
 
@@ -113,5 +122,9 @@ class Polo
 			'Sign' => OpenSSL::HMAC.hexdigest(digest, @secret, params),
 			'Content-Type' => 'application/json'
 		}
+	end
+
+	def margin(timestamp)
+		(Time.now - timestamp).to_i
 	end
 end
