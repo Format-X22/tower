@@ -6,7 +6,6 @@ require 'json'
 
 class Polo
 	CANDLES_MARGIN = 2 * 60 * 60
-	HISTORY_MARGIN = 7 * 24 * 60 * 60
 	CANDLES_END = 9999999999
 	CANDLES_PERIOD = 300
 
@@ -53,11 +52,11 @@ class Polo
 						 })
 	end
 
-	def history(pair)
+	def history(pair, from)
 		private_api_call({
 			:command => 'returnTradeHistory',
 			:currencyPair => "BTC_#{pair}",
-			:start => margin(HISTORY_MARGIN),
+			:start => from.to_i,
 						 })
 	end
 
