@@ -5,7 +5,7 @@ require_relative 'Database'
 
 class Robot
 
-	TRADE_TIMEOUT = 60 * 60
+	TRADE_TIMEOUT = 3 * 60
 	TOP_PRICE = BigDecimal.new('1.97')
 
 	def initialize (key, secret, db_name)
@@ -34,22 +34,20 @@ class Robot
 		low = actualize_low(pair, meta['low'])
 
 		if meta['calm']
-			date = DateTime.strptime(meta['calm'], '%Y-%m-%d %H:%M:%S')
+			date = parse_date(meta['calm'])
 
 			if date > DateTime.now
 				return
 			end
 		end
 
-		return
-
-		unless @orders["BTC_#{pair}"].length
+		if @orders["BTC_#{pair}"].length == 0
 			next_state(pair, meta)
 		end
 
 		order = @orders["BTC_#{pair}"][0]
 
-		trade_by_state(meta, low, order)
+		trade_by_state(pair, meta, low, order)
 	end
 
 	def next_state(pair, meta)
@@ -59,7 +57,7 @@ class Robot
 				meta['sell_slice'] = DateTime.now
 			when 'hold'
 				meta['state'] = 'calm'
-				meta['calm'] = Date.today + 3
+				meta['calm'] = DateTime.now + 3
 			when 'calm'
 				meta['state'] = 'buy'
 			else
@@ -69,28 +67,33 @@ class Robot
 		@database.meta(pair, meta)
 	end
 
-	def trade_by_state(meta, low, order)
+	def trade_by_state(pair, meta, low, order)
 		case meta['state']
 			when 'buy'
-				rate = @polo.glass(pair)[0][0]
-				btc = @money['BTC']
-				amount = BigDecimal.new(btc.to_s) / rate
+				rate = num(@polo.glass(pair)['asks'].first.first)
+				sell_slice = parse_date(meta['sell_slice'])
+				btc = calc_btc(pair, sell_slice, meta['init_btc'])
+				amount = btc / rate
 
 				if order
-					@polo.replace(order.orderNumber, rate, amount)
+					@polo.replace(order['orderNumber'], rate, amount)
+					@database.log("Rep Buy: #{pair} [#{rate} :: #{amount}]")
 				else
 					@polo.buy(pair, rate, amount)
-					meta['low'] = nil
+					@database.log("New Buy: #{pair} [#{rate} :: #{amount}]")
+					meta['low'] = 0
 					@database.meta(pair, meta)
 				end
 			when 'hold'
-				rate = low * TOP_PRICE * @usd_sigma
-				amount = @money[pair]
+				rate = low * TOP_PRICE * calc_sigma(meta)
+				amount = num(@money[pair])
 
 				if order
-					@polo.replace(order.orderNumber, rate, amount)
+					@polo.replace(order['orderNumber'], rate, amount)
+					@database.log("Rep Sell: #{pair} [#{rate} :: #{amount}]")
 				else
 					@polo.sell(pair, rate, amount)
+					@database.log("New Sell: #{pair} [#{rate} :: #{amount}]")
 				end
 			when 'calm'
 				# do nothing
@@ -102,7 +105,7 @@ class Robot
 	def actualize_low(pair, meta_low = 0, candles = nil)
 		candles = @polo.candles(pair) unless candles
 		low = calc_low(candles)
-		meta_low = BigDecimal.new(meta_low.to_s)
+		meta_low = num(meta_low)
 
 		if meta_low != 0 and low > meta_low
 			low = meta_low
@@ -116,17 +119,55 @@ class Robot
 	end
 
 	def calc_low (candles)
-		low = BigDecimal.new('+Infinity')
+		low = num('+Infinity')
 
 		candles.each { |candle|
-			candle_low = BigDecimal.new(candle['low'].to_s)
+			candle_low = num(candle['low'])
 
 			if candle_low < low
 				low = candle_low
 			end
 		}
 
-		BigDecimal.new(low.to_s)
+		num(low)
+	end
+
+	def calc_btc(pair, sell_slice, default)
+		unless sell_slice
+			return num(default)
+		end
+
+		sum = num(0)
+
+		@polo.history(pair, sell_slice).each { |trade|
+			sum += num(trade['total'])
+		}
+
+		sum
+	end
+
+	def calc_sigma(meta)
+		usdt_low = num(meta['usdt_low'])
+
+		if usdt_low == 0
+			return num(1)
+		end
+
+		num(@usdt_candle['low']) / usdt_low
+	end
+
+	def parse_date(date)
+		unless date
+			return nil
+		end
+
+		DateTime.strptime(date, '%Y-%m-%d %H:%M:%S')
+	end
+
+	def num(number)
+		number = (number or 0)
+
+		BigDecimal.new(number.to_s)
 	end
 
 end

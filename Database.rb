@@ -11,7 +11,7 @@ class Database
 			data = []
 
 			values.each do |key, value|
-				data.push("#{key}='#{value}'")
+				data.push("#{key}='#{value}'") if value
 			end
 
 			if data.length == 0
