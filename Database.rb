@@ -24,7 +24,7 @@ class Database
 		else
 			result = nil
 
-			exec('SELECT low, calm, state FROM meta WHERE pair = $1', [pair]).each do |row|
+			exec('SELECT * FROM meta WHERE pair = $1', [pair]).each do |row|
 				result = row
 			end
 
