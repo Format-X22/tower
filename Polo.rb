@@ -42,7 +42,7 @@ class Polo
 		private_api_call({
 			:command => 'returnAvailableAccountBalances',
 			:account => 'exchange'
-						 })
+						 })['exchange']
 	end
 
 	def orders

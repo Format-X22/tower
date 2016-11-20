@@ -15,7 +15,7 @@ class Database
 			end
 
 			if data.length == 0
-				log_error('Попытка сохранения пустой меты')
+				log_error('Try save empty meta')
 				return
 			end
 
@@ -35,7 +35,7 @@ class Database
 	def pairs
 		result = []
 
-		exec('SELECT pair FROM pairs').values.each do |row|
+		exec('SELECT pair FROM pairs WHERE trade = TRUE').values.each do |row|
 			result.push(row[0])
 		end
 

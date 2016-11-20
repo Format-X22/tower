@@ -1,12 +1,12 @@
-require 'Date'
-require 'BigDecimal'
+require 'date'
+require 'bigdecimal'
 require_relative 'Polo'
 require_relative 'Database'
 
 class Robot
 
-	TRADE_INTERVAL = 60 * 60
-	TOP_PRICE = BigDecimal.new(2.97)
+	TRADE_TIMEOUT = 60 * 60
+	TOP_PRICE = BigDecimal.new('1.97')
 
 	def initialize (key, secret, db_name)
 		@polo = Polo.new(key, secret)
@@ -14,43 +14,34 @@ class Robot
 		@pairs = @database.pairs
 
 		while true
-			begin
-				trade
-				sleep TRADE_INTERVAL
-			rescue Exception => exception
-				puts exception.message
-				puts exception.backtrace.inspect
-				sleep TRADE_INTERVAL * 5
-			end
+			trade
+			sleep TRADE_TIMEOUT
 		end
 	end
 
 	def trade
-		extract_shared_data
+		@money = @polo.money
+		@orders = @polo.orders
+		@usdt_candle = @polo.candles('USDT').last
 
 		@pairs.each { |pair|
 			trade_pair(pair)
 		}
 	end
 
-	def extract_shared_data
-		@money = @polo.money
-		@orders = @polo.orders
-
-		candles = @polo.candles('USDT')
-		meta = @database.meta('USDT')
-		low = actualize_low('USDT', meta.low, candles)
-
-		@usd_sigma = low / candles.last.weightedAverage
-	end
-
 	def trade_pair(pair)
 		meta = @database.meta(pair)
-		low = actualize_low(pair, meta.low)
+		low = actualize_low(pair, meta['low'])
 
-		if meta.calm and meta.calm > Date.today
-			return
+		if meta['calm']
+			date = DateTime.strptime(meta['calm'], '%Y-%m-%d %H:%M:%S')
+
+			if date > DateTime.now
+				return
+			end
 		end
+
+		return
 
 		unless @orders["BTC_#{pair}"].length
 			next_state(pair, meta)
@@ -62,14 +53,15 @@ class Robot
 	end
 
 	def next_state(pair, meta)
-		case meta.state
+		case meta['state']
 			when 'buy'
-				meta.state = 'hold'
+				meta['state'] = 'hold'
+				meta['sell_slice'] = DateTime.now
 			when 'hold'
-				meta.state = 'calm'
-				meta.calm = Date.today + 3
+				meta['state'] = 'calm'
+				meta['calm'] = Date.today + 3
 			when 'calm'
-				meta.state = 'buy'
+				meta['state'] = 'buy'
 			else
 				# do nothing
 		end
@@ -78,17 +70,17 @@ class Robot
 	end
 
 	def trade_by_state(meta, low, order)
-		case meta.state
+		case meta['state']
 			when 'buy'
 				rate = @polo.glass(pair)[0][0]
 				btc = @money['BTC']
-				amount = BigDecimal.new(btc) / rate
+				amount = BigDecimal.new(btc.to_s) / rate
 
 				if order
 					@polo.replace(order.orderNumber, rate, amount)
 				else
 					@polo.buy(pair, rate, amount)
-					meta.low = nil
+					meta['low'] = nil
 					@database.meta(pair, meta)
 				end
 			when 'hold'
@@ -107,31 +99,34 @@ class Robot
 		end
 	end
 
-	def actualize_low(pair, meta_low, *candles)
+	def actualize_low(pair, meta_low = 0, candles = nil)
 		candles = @polo.candles(pair) unless candles
 		low = calc_low(candles)
+		meta_low = BigDecimal.new(meta_low.to_s)
 
-		if meta_low and low > meta_low
+		if meta_low != 0 and low > meta_low
 			low = meta_low
 		end
 
 		if low != meta_low
-			@database.meta(pair, {:low => low})
+			@database.meta(pair, {:low => low, :low_usdt => @usdt_candle['low']})
 		end
 
-		BigDecimal.new(low)
+		low
 	end
 
 	def calc_low (candles)
-		low = Infinity
+		low = BigDecimal.new('+Infinity')
 
 		candles.each { |candle|
-			if candle.low < low
-				low = candle.low
+			candle_low = BigDecimal.new(candle['low'].to_s)
+
+			if candle_low < low
+				low = candle_low
 			end
 		}
 
-		low
+		BigDecimal.new(low.to_s)
 	end
 
 end
