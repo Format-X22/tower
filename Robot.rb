@@ -77,23 +77,26 @@ class Robot
 
 				if order
 					@polo.replace(order['orderNumber'], rate, amount)
-					@database.log("Rep Buy: #{pair} [#{rate} :: #{amount}]")
+					log_trade('Rep Buy', pair, rate, amount)
 				else
 					@polo.buy(pair, rate, amount)
-					@database.log("New Buy: #{pair} [#{rate} :: #{amount}]")
+					log_trade('New Buy', pair, rate, amount)
 					meta['low'] = 0
 					@database.meta(pair, meta)
 				end
 			when 'hold'
 				rate = low * TOP_PRICE * calc_sigma(meta)
-				amount = num(@money[pair])
 
 				if order
+					amount = num(order['amount'])
+
 					@polo.replace(order['orderNumber'], rate, amount)
-					@database.log("Rep Sell: #{pair} [#{rate} :: #{amount}]")
+					log_trade('Rep Sell', pair, rate, amount)
 				else
+					amount = num(@money[pair])
+
 					@polo.sell(pair, rate, amount)
-					@database.log("New Sell: #{pair} [#{rate} :: #{amount}]")
+					log_trade('New Sell', pair, rate, amount)
 				end
 			when 'calm'
 				# do nothing
@@ -138,10 +141,15 @@ class Robot
 		end
 
 		sum = num(0)
+		sell_slice = sell_slice - 1 / 24 / 60 / 60
 
 		@polo.history(pair, sell_slice).each { |trade|
 			sum += num(trade['total'])
 		}
+
+		if sum == 0
+			sum = num(default)
+		end
 
 		sum
 	end
@@ -168,6 +176,10 @@ class Robot
 		number = (number or 0)
 
 		BigDecimal.new(number.to_s)
+	end
+
+	def log_trade(type, pair, rate, amount)
+		@database.log("#{type}: #{pair} [#{rate.to_s} :: #{amount.to_s}]")
 	end
 
 end

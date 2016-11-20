@@ -56,7 +56,7 @@ class Polo
 		private_api_call({
 			:command => 'returnTradeHistory',
 			:currencyPair => "BTC_#{pair}",
-			:start => from.to_i,
+			:start => from.to_time.to_i,
 						 })
 	end
 
@@ -96,7 +96,7 @@ class Polo
 	end
 
 	def private_api_call(config)
-		config[:nonce] = Time.now.to_i
+		config[:nonce] = (Time.now.to_f * 1000).to_i
 
 		uri = URI('https://poloniex.com/tradingApi')
 		headers = request_headers(config)
