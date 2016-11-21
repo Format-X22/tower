@@ -179,7 +179,7 @@ class Robot
 	end
 
 	def log_trade(type, pair, rate, amount)
-		@database.log("#{type}: #{pair} [#{rate.to_s} :: #{amount.to_s}]")
+		@database.log("#{type}: #{pair} [#{@polo.readable(rate)} :: #{@polo.readable(amount)}]")
 	end
 
 end
