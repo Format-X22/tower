@@ -98,7 +98,7 @@ class Polo
 		response = Net::HTTP.get(URI("https://poloniex.com/public?#{params}"))
 		result = JSON.parse(response)
 
-		if result['error']
+		if result.is_a?(Hash) and result['error']
 			@database.log_error(result['error'])
 			exit
 		end
@@ -119,7 +119,7 @@ class Polo
 			result = JSON.parse(http.request(request).body)
 		end
 
-		if result['error']
+		if result.is_a?(Hash) and result['error']
 			@database.log_error(result['error'])
 			exit
 		end
