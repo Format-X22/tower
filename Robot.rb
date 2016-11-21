@@ -72,13 +72,16 @@ class Robot
 			when 'buy'
 				rate = num(@polo.glass(pair)['asks'].first.first)
 				sell_slice = parse_date(meta['sell_slice'])
-				btc = calc_btc(pair, sell_slice, meta['init_btc'])
-				amount = btc / rate
 
 				if order
+					amount = num(order['amount'])
+
 					@polo.replace(order['orderNumber'], rate, amount)
 					log_trade('Rep Buy', pair, rate, amount)
 				else
+					btc = calc_btc(pair, sell_slice, meta['init_btc'])
+					amount = btc / rate
+
 					@polo.buy(pair, rate, amount)
 					log_trade('New Buy', pair, rate, amount)
 					meta['low'] = 0

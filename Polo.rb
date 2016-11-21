@@ -77,6 +77,10 @@ class Polo
 						 })
 	end
 
+	def readable(num)
+		'%1.8f' % num.to_f
+	end
+
 	private
 
 	def trade(type, pair, rate, amount)
@@ -125,9 +129,5 @@ class Polo
 
 	def margin(timestamp)
 		(Time.now - timestamp).to_i
-	end
-
-	def readable(num)
-		'%1.8f' % num.to_f
 	end
 end
