@@ -9,8 +9,8 @@ class Robot
 	TOP_PRICE = BigDecimal.new('1.97')
 
 	def initialize (key, secret, db_name)
-		@polo = Polo.new(key, secret)
 		@database = Database.new(db_name)
+		@polo = Polo.new(key, secret, @database)
 		@pairs = @database.pairs
 
 		while true
@@ -74,7 +74,7 @@ class Robot
 				sell_slice = parse_date(meta['sell_slice'])
 
 				if order
-					amount = num(order['amount'])
+					amount = num(order['rate']) * num(order['amount']) / rate
 
 					@polo.replace(order['orderNumber'], rate, amount)
 					log_trade('Rep Buy', pair, rate, amount)

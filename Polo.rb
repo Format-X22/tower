@@ -9,9 +9,10 @@ class Polo
 	CANDLES_END = 9999999999
 	CANDLES_PERIOD = 300
 
-	def initialize(key, secret)
+	def initialize(key, secret, database)
 		@key = key
 		@secret = secret
+		@database = database
 	end
 
 	def candles(pair)
@@ -95,8 +96,14 @@ class Polo
 	def public_api_call(config)
 		params = URI.encode_www_form(config)
 		response = Net::HTTP.get(URI("https://poloniex.com/public?#{params}"))
+		result = JSON.parse(response)
 
-		JSON.parse(response)
+		if result['error']
+			@database.log_error(result['error'])
+			exit
+		end
+
+		result
 	end
 
 	def private_api_call(config)
@@ -110,6 +117,11 @@ class Polo
 
 		Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
 			result = JSON.parse(http.request(request).body)
+		end
+
+		if result['error']
+			@database.log_error(result['error'])
+			exit
 		end
 
 		result
