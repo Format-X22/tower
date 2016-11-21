@@ -33,6 +33,10 @@ class Robot
 		meta = @database.meta(pair)
 		low = actualize_low(pair, meta['low'])
 
+		unless low
+			return
+		end
+
 		if meta['calm']
 			date = parse_date(meta['calm'])
 
@@ -115,6 +119,11 @@ class Robot
 
 		if meta_low != 0 and low > meta_low
 			low = meta_low
+		end
+
+		if low == 0
+			@database.log_error("Empty low for #{pair}")
+			return nil
 		end
 
 		if low != meta_low
