@@ -99,7 +99,7 @@ class Polo
 		result = JSON.parse(response)
 
 		if result.is_a?(Hash) and result['error']
-			@database.log_error(result['error'])
+			@database.log_error(`#{result['error']} - #{config}`)
 			exit
 		end
 
@@ -120,7 +120,7 @@ class Polo
 		end
 
 		if result.is_a?(Hash) and result['error']
-			@database.log_error(result['error'])
+			@database.log_error(`#{result['error']} - #{config}`)
 			exit
 		end
 
