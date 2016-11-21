@@ -72,8 +72,8 @@ class Polo
 		private_api_call({
 			:command => 'moveOrder',
 			:orderNumber => id,
-			:rate => rate.to_f,
-			:amount => amount.to_f
+			:rate => readable(rate),
+			:amount => readable(amount)
 						 })
 	end
 
@@ -83,8 +83,8 @@ class Polo
 		private_api_call({
 			:command => type,
 			:currencyPair => "BTC_#{pair}",
-			:rate => rate.to_f,
-			:amount => amount.to_f
+			:rate => readable(rate),
+			:amount => readable(amount)
 						 })
 	end
 
@@ -125,5 +125,9 @@ class Polo
 
 	def margin(timestamp)
 		(Time.now - timestamp).to_i
+	end
+
+	def readable(num)
+		'%1.8f' % num.to_f
 	end
 end
