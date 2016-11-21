@@ -8,6 +8,7 @@ class Polo
 	CANDLES_MARGIN = 2 * 60 * 60
 	CANDLES_END = 9999999999
 	CANDLES_PERIOD = 300
+	MAX_REQUESTS_PER_SECOND = 4
 
 	def initialize(key, secret, database)
 		@key = key
@@ -94,6 +95,8 @@ class Polo
 	end
 
 	def public_api_call(config)
+		sleep 1 / MAX_REQUESTS_PER_SECOND
+
 		params = URI.encode_www_form(config)
 		response = Net::HTTP.get(URI("https://poloniex.com/public?#{params}"))
 		result = JSON.parse(response)
@@ -107,6 +110,8 @@ class Polo
 	end
 
 	def private_api_call(config)
+		sleep 1 / MAX_REQUESTS_PER_SECOND
+
 		config[:nonce] = (Time.now.to_f * 1000).to_i
 
 		uri = URI('https://poloniex.com/tradingApi')
