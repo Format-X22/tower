@@ -72,8 +72,8 @@ class Polo
 		private_api_call({
 			:command => 'moveOrder',
 			:orderNumber => id,
-			:rate => rate,
-			:amount => amount
+			:rate => rate.to_f,
+			:amount => amount.to_f
 						 })
 	end
 
@@ -83,8 +83,8 @@ class Polo
 		private_api_call({
 			:command => type,
 			:currencyPair => "BTC_#{pair}",
-			:rate => rate,
-			:amount => amount
+			:rate => rate.to_f,
+			:amount => amount.to_f
 						 })
 	end
 
