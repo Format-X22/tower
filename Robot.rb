@@ -81,13 +81,11 @@ class Robot
 					amount = num(order['rate']) * num(order['amount']) / rate
 
 					@polo.replace(order['orderNumber'], rate, amount)
-					log_trade('Rep Buy', pair, rate, amount)
 				else
 					btc = calc_btc(pair, sell_slice, meta['init_btc'])
 					amount = btc / rate
 
 					@polo.buy(pair, rate, amount)
-					log_trade('New Buy', pair, rate, amount)
 					meta['low'] = 0
 					@database.meta(pair, meta)
 				end
@@ -98,12 +96,10 @@ class Robot
 					amount = num(order['amount'])
 
 					@polo.replace(order['orderNumber'], rate, amount)
-					log_trade('Rep Sell', pair, rate, amount)
 				else
 					amount = num(@money[pair])
 
 					@polo.sell(pair, rate, amount)
-					log_trade('New Sell', pair, rate, amount)
 				end
 			when 'calm'
 				# do nothing
@@ -122,7 +118,7 @@ class Robot
 		end
 
 		if low == 0
-			@database.log_error("Empty low for #{pair}")
+			@database.log_warn("Empty low for #{pair}")
 			return nil
 		end
 
@@ -188,10 +184,6 @@ class Robot
 		number = (number or 0)
 
 		BigDecimal.new(number.to_s)
-	end
-
-	def log_trade(type, pair, rate, amount)
-		@database.log("#{type}: #{pair} [#{@polo.readable(rate)} :: #{@polo.readable(amount)}]")
 	end
 
 end

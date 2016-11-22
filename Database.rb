@@ -46,6 +46,10 @@ class Database
 		exec('INSERT INTO log (text) VALUES ($1)', [text])
 	end
 
+	def log_warn(text)
+		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['W', text])
+	end
+
 	def log_error(text)
 		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['E', text])
 	end
