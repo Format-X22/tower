@@ -5,7 +5,7 @@ require 'net/http'
 require 'json'
 
 class Polo
-	CANDLES_MARGIN = 60 * 60
+	CANDLES_MARGIN = 3 * 60 * 60
 	CANDLES_END = 9999999999
 	CANDLES_PERIOD = 300
 	MAX_REQUESTS_PER_SECOND = 4
