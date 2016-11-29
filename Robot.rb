@@ -6,7 +6,7 @@ require_relative 'Database'
 class Robot
 
 	TRADE_TIMEOUT = 3 * 60
-	TOP_PRICE = BigDecimal.new('1.97')
+	TOP_PRICE = BigDecimal.new('1.70')
 
 	def initialize (key, secret, db_name)
 		@database = Database.new(db_name)
