@@ -118,7 +118,6 @@ class Robot
 		end
 
 		if low == 0
-			@database.log_warn("Empty low for #{pair}")
 			return nil
 		end
 
@@ -149,10 +148,10 @@ class Robot
 		end
 
 		sum = num(0)
-		sell_slice = sell_slice - 1 / 24 / 60 / 60
+		sell_slice = sell_slice - 1 / 24.0 / 60.0 / 60.0
 
 		@polo.history(pair, sell_slice).each { |trade|
-			sum += num(trade['total'])
+			sum += num(trade['total']) * (num(trade['fee']) + -1)
 		}
 
 		if sum == 0
