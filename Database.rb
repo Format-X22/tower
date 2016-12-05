@@ -47,11 +47,15 @@ class Database
 	end
 
 	def log_warn(text)
-		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['W', text])
+		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['WARN', text])
 	end
 
 	def log_error(text)
-		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['E', text])
+		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['ERROR', text])
+	end
+
+	def log_trade(type, pair, btc)
+		exec('INSERT INTO trade_log (type, pair, btc) VALUES ($1, $2, $3)', [type, pair, btc])
 	end
 
 	private

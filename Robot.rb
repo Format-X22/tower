@@ -6,7 +6,7 @@ require_relative 'Database'
 class Robot
 
 	TRADE_TIMEOUT = 3 * 60
-	TOP_PRICE = BigDecimal.new('1.70')
+	TOP_PRICE = BigDecimal.new('1.97')
 
 	def initialize (key, secret, db_name)
 		@database = Database.new(db_name)
@@ -88,6 +88,7 @@ class Robot
 					@polo.buy(pair, rate, amount)
 					meta['low'] = 0
 					@database.meta(pair, meta)
+					@database.log_trade('BUY', pair, btc)
 				end
 			when 'hold'
 				rate = low * TOP_PRICE * calc_sigma(meta)
@@ -100,6 +101,7 @@ class Robot
 					amount = num(@money[pair])
 
 					@polo.sell(pair, rate, amount)
+					@database.log_trade('SELL', pair, rate * amount)
 				end
 			when 'calm'
 				# do nothing
