@@ -43,19 +43,19 @@ class Database
 	end
 
 	def log(text)
-		exec('INSERT INTO log (text) VALUES ($1)', [text])
+		exec('INSERT INTO log_text (text) VALUES ($1)', [text])
 	end
 
 	def log_warn(text)
-		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['WARN', text])
+		exec('INSERT INTO log_text (type, text) VALUES ($1, $2)', ['WARN', text])
 	end
 
 	def log_error(text)
-		exec('INSERT INTO log (type, text) VALUES ($1, $2)', ['ERROR', text])
+		exec('INSERT INTO log_text (type, text) VALUES ($1, $2)', ['ERROR', text])
 	end
 
 	def log_trade(type, pair, btc)
-		exec('INSERT INTO trade_log (type, pair, btc) VALUES ($1, $2, $3)', [type, pair, btc])
+		exec('INSERT INTO log_trade (type, pair, btc) VALUES ($1, $2, $3)', [type, pair, btc])
 	end
 
 	private

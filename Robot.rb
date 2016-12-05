@@ -89,7 +89,7 @@ class Robot
 
 					@polo.replace(order['orderNumber'], rate, amount)
 				else
-					btc = calc_btc(pair, sell_slice, meta['init_btc'])
+					btc = calc_btc(pair, sell_slice, meta['unused_btc'])
 					amount = btc / rate
 
 					@polo.buy(pair, rate, amount)
