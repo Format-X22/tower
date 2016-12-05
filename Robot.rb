@@ -14,8 +14,15 @@ class Robot
 		@pairs = @database.pairs
 
 		while true
-			trade
-			sleep TRADE_TIMEOUT
+			begin
+				trade
+				sleep TRADE_TIMEOUT
+			rescue Exception => exception
+				puts exception.message
+				puts exception.backtrace.inspect
+				@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
+				sleep TRADE_TIMEOUT * 5
+			end
 		end
 	end
 
