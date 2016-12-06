@@ -16,9 +16,7 @@ class Robot
 				trade
 				sleep @profile['trade_timeout']
 			rescue Exception => exception
-				puts exception.message
-				puts exception.backtrace.inspect
-				@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
+				log_exception(exception)
 				sleep @profile['trade_timeout'] * @profile['rescue_mul']
 			end
 		end
@@ -30,11 +28,17 @@ class Robot
 		@usdt_candle = @polo.candles('USDT').last
 
 		@pairs.each { |pair|
-			trade_pair(pair)
+			begin
+				trade_pair(pair)
+			rescue Exception => exception
+				log_exception(exception)
+			end
 		}
 	end
 
 	def trade_pair(pair)
+		@candles = @polo.candles(pair)
+
 		meta = @database.meta(pair)
 		low = actualize_low(pair, meta['low'])
 
@@ -50,13 +54,13 @@ class Robot
 			end
 		end
 
-		if @orders["BTC_#{pair}"].length == 0
+		orders = @orders["BTC_#{pair}"]
+
+		if orders.length == 0
 			next_state(pair, meta)
 		end
 
-		order = @orders["BTC_#{pair}"][0]
-
-		trade_by_state(pair, meta, low, order)
+		trade_by_state(pair, meta, low, orders[0])
 	end
 
 	def next_state(pair, meta)
@@ -68,7 +72,9 @@ class Robot
 				meta['state'] = 'calm'
 				meta['calm'] = DateTime.now + @profile['calm_days']
 			when 'calm'
-				meta['state'] = 'buy'
+				if is_red_candle(@candles.last)
+					meta['state'] = 'buy'
+				end
 			else
 				# do nothing
 		end
@@ -79,35 +85,9 @@ class Robot
 	def trade_by_state(pair, meta, low, order)
 		case meta['state']
 			when 'buy'
-				rate = num(@polo.glass(pair)['asks'].first.first)
-				sell_slice = parse_date(meta['sell_slice'])
-
-				if order
-					amount = num(order['rate']) * num(order['amount']) / rate
-
-					@polo.replace(order['orderNumber'], rate, amount)
-				else
-					btc = calc_btc(pair, sell_slice, meta['unused_btc'])
-					amount = btc / rate
-
-					@polo.buy(pair, rate, amount)
-					meta['low'] = 0
-					@database.meta(pair, meta)
-					@database.log_trade('BUY', pair, btc)
-				end
+				buy(pair, order)
 			when 'hold'
-				rate = low * @profile['top_price'] * calc_sigma(meta)
-
-				if order
-					amount = num(order['amount'])
-
-					@polo.replace(order['orderNumber'], rate, amount)
-				else
-					amount = num(@money[pair])
-
-					@polo.sell(pair, rate, amount)
-					@database.log_trade('SELL', pair, rate * amount)
-				end
+				hold(pair, order, low)
 			when 'calm'
 				# do nothing
 			else
@@ -115,9 +95,42 @@ class Robot
 		end
 	end
 
-	def actualize_low(pair, meta_low = 0, candles = nil)
-		candles = @polo.candles(pair) unless candles
-		low = calc_low(candles)
+	def buy(pair, order)
+		rate = num(@polo.glass(pair)['asks'].first.first)
+		sell_slice = parse_date(meta['sell_slice'])
+
+		if order
+			amount = num(order['rate']) * num(order['amount']) / rate
+
+			@polo.replace(order['orderNumber'], rate, amount)
+		else
+			btc = calc_btc(pair, sell_slice, meta['unused_btc'])
+			amount = btc / rate
+
+			@polo.buy(pair, rate, amount)
+			meta['low'] = 0
+			@database.meta(pair, meta)
+			@database.log_trade('BUY', pair, btc)
+		end
+	end
+
+	def hold(pair, order, low)
+		rate = low * @profile['top_price'] * calc_sigma(meta)
+
+		if order
+			amount = num(order['amount'])
+
+			@polo.replace(order['orderNumber'], rate, amount)
+		else
+			amount = num(@money[pair])
+
+			@polo.sell(pair, rate, amount)
+			@database.log_trade('SELL', pair, rate * amount)
+		end
+	end
+
+	def actualize_low(pair, meta_low = 0)
+		low = calc_low
 		meta_low = num(meta_low)
 
 		if meta_low != 0 and low > meta_low
@@ -135,10 +148,10 @@ class Robot
 		low
 	end
 
-	def calc_low (candles)
+	def calc_low
 		low = num('+Infinity')
 
-		candles.each { |candle|
+		@candles.each { |candle|
 			candle_low = num(candle['low'])
 
 			if candle_low < low
@@ -190,6 +203,17 @@ class Robot
 		number = (number or 0)
 
 		BigDecimal.new(number.to_s)
+	end
+
+	def log_exception(exception)
+		puts exception.message
+		puts exception.backtrace.inspect
+
+		@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
+	end
+
+	def is_red_candle(candle)
+		candle['open'] > candle['close']
 	end
 
 end
