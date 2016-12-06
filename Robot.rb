@@ -22,6 +22,8 @@ class Robot
 		end
 	end
 
+	private
+
 	def trade
 		@money = @polo.money
 		@orders = @polo.orders
@@ -168,7 +170,7 @@ class Robot
 		end
 
 		sum = num(0)
-		sell_slice = sell_slice - 1 / 24.0 / 60.0 / 60.0
+		sell_slice = sell_slice - one_second
 
 		@polo.history(pair, sell_slice).each { |trade|
 			sum += num(trade['total']) * (num(trade['fee']) + -1)
@@ -189,6 +191,10 @@ class Robot
 		end
 
 		num(@usdt_candle['low']) / usdt_low
+	end
+
+	def is_red_candle(candle)
+		candle['open'] > candle['close']
 	end
 
 	def parse_date(date)
@@ -212,8 +218,8 @@ class Robot
 		@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
 	end
 
-	def is_red_candle(candle)
-		candle['open'] > candle['close']
+	def one_second
+		1 / 24.0 / 60.0 / 60.0
 	end
 
 end
