@@ -6,6 +6,16 @@ class Database
 		@connection = PG.connect(:dbname => db_name)
 	end
 
+	def profile
+		result = nil
+
+		exec('SELECT * FROM profile').each do |row|
+			result = row
+		end
+
+		result
+	end
+
 	def meta(pair, values = nil)
 		if values
 			data = []

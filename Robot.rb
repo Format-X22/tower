@@ -5,23 +5,21 @@ require_relative 'Database'
 
 class Robot
 
-	TRADE_TIMEOUT = 3 * 60
-	TOP_PRICE = BigDecimal.new('1.97')
-
 	def initialize (key, secret, db_name)
 		@database = Database.new(db_name)
 		@polo = Polo.new(key, secret, @database)
 		@pairs = @database.pairs
+		@profile = @database.profile
 
 		while true
 			begin
 				trade
-				sleep TRADE_TIMEOUT
+				sleep @profile['trade_timeout']
 			rescue Exception => exception
 				puts exception.message
 				puts exception.backtrace.inspect
 				@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
-				sleep TRADE_TIMEOUT * 5
+				sleep @profile['trade_timeout'] * @profile['rescue_mul']
 			end
 		end
 	end
@@ -68,7 +66,7 @@ class Robot
 				meta['sell_slice'] = DateTime.now
 			when 'hold'
 				meta['state'] = 'calm'
-				meta['calm'] = DateTime.now + 3
+				meta['calm'] = DateTime.now + @profile['calm_days']
 			when 'calm'
 				meta['state'] = 'buy'
 			else
@@ -98,7 +96,7 @@ class Robot
 					@database.log_trade('BUY', pair, btc)
 				end
 			when 'hold'
-				rate = low * TOP_PRICE * calc_sigma(meta)
+				rate = low * @profile['top_price'] * calc_sigma(meta)
 
 				if order
 					amount = num(order['amount'])
