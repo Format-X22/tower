@@ -8,15 +8,22 @@ class Robot
 	def initialize (key, secret, db_name)
 		@database = Database.new(db_name)
 		@polo = Polo.new(key, secret, @database)
-		@pairs = @database.pairs
-		@profile = @database.profile
 
 		while true
 			begin
+				@pairs = @database.pairs
+				@profile = @database.profile
+
+				exit if @profile['stop']
+
 				trade
+
 				sleep @profile['trade_timeout']
 			rescue Exception => exception
 				log_exception(exception)
+
+				exit if @profile['stop']
+
 				sleep @profile['trade_timeout'] * @profile['rescue_mul']
 			end
 		end
@@ -73,6 +80,7 @@ class Robot
 			when 'buy'
 				meta['state'] = 'hold'
 				meta['sell_slice'] = DateTime.now
+				meta['unused_btc'] = 0
 			when 'hold'
 				meta['state'] = 'calm'
 				meta['calm'] = DateTime.now + @profile['calm_days']
@@ -90,9 +98,9 @@ class Robot
 	def trade_by_state(meta, low, order)
 		case meta['state']
 			when 'buy'
-				buy(order)
+				buy(meta, order)
 			when 'hold'
-				hold(order, low)
+				hold(meta, order, low)
 			when 'calm'
 				# do nothing
 			else
@@ -100,7 +108,7 @@ class Robot
 		end
 	end
 
-	def buy(order)
+	def buy(meta, order)
 		rate = first_in_glass('asks')
 		sell_slice = parse_date(meta['sell_slice'])
 
@@ -109,7 +117,7 @@ class Robot
 
 			@polo.replace(order['orderNumber'], rate, amount)
 		else
-			btc = calc_btc(sell_slice, meta['unused_btc'])
+			btc = calc_btc(sell_slice, num(meta['unused_btc']))
 			amount = btc / rate
 
 			@polo.buy(rate, amount)
@@ -119,7 +127,7 @@ class Robot
 		end
 	end
 
-	def hold(order, low)
+	def hold(meta, order, low)
 		rate = low * @profile['top_price'] * calc_sigma(meta)
 		min = first_in_glass('bids') * @profile['min_sell_mul']
 		rate = min if rate < min
@@ -169,23 +177,21 @@ class Robot
 		num(low)
 	end
 
-	def calc_btc(sell_slice, default)
+	def calc_btc(sell_slice, unused)
 		unless sell_slice
-			return num(default)
+			return unused
 		end
 
 		sum = num(0)
 		sell_slice = sell_slice - one_second
 
 		@polo.history(sell_slice).each { |trade|
-			sum += num(trade['total']) * (num(trade['fee']) + -1)
+			if trade['type'] == 'sell'
+				sum += num(trade['total']) * (num(trade['fee']) + -1)
+			end
 		}
 
-		if sum == 0
-			sum = num(default)
-		end
-
-		sum
+		sum + unused
 	end
 
 	def calc_sigma(meta)
