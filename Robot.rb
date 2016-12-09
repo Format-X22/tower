@@ -31,18 +31,21 @@ class Robot
 
 		@pairs.each { |pair|
 			begin
-				trade_pair(pair)
+				@pair = pair
+				@polo.pair = pair
+				@database.pair = pair
+				trade_pair
 			rescue Exception => exception
 				log_exception(exception)
 			end
 		}
 	end
 
-	def trade_pair(pair)
-		@candles = @polo.candles(pair)
+	def trade_pair
+		@candles = @polo.candles
 
-		meta = @database.meta(pair)
-		low = actualize_low(pair, meta['low'])
+		meta = @database.meta
+		low = actualize_low(meta['low'])
 
 		unless low
 			return
@@ -56,16 +59,16 @@ class Robot
 			end
 		end
 
-		orders = @orders["BTC_#{pair}"]
+		orders = @orders["BTC_#{@pair}"]
 
 		if orders.length == 0
-			next_state(pair, meta)
+			next_state(meta)
 		end
 
-		trade_by_state(pair, meta, low, orders[0])
+		trade_by_state(meta, low, orders[0])
 	end
 
-	def next_state(pair, meta)
+	def next_state(meta)
 		case meta['state']
 			when 'buy'
 				meta['state'] = 'hold'
@@ -81,15 +84,15 @@ class Robot
 				# do nothing
 		end
 
-		@database.meta(pair, meta)
+		@database.meta(meta)
 	end
 
-	def trade_by_state(pair, meta, low, order)
+	def trade_by_state(meta, low, order)
 		case meta['state']
 			when 'buy'
-				buy(pair, order)
+				buy(order)
 			when 'hold'
-				hold(pair, order, low)
+				hold(order, low)
 			when 'calm'
 				# do nothing
 			else
@@ -97,8 +100,8 @@ class Robot
 		end
 	end
 
-	def buy(pair, order)
-		rate = num(@polo.glass(pair)['asks'].first.first)
+	def buy(order)
+		rate = first_in_glass('asks')
 		sell_slice = parse_date(meta['sell_slice'])
 
 		if order
@@ -106,32 +109,34 @@ class Robot
 
 			@polo.replace(order['orderNumber'], rate, amount)
 		else
-			btc = calc_btc(pair, sell_slice, meta['unused_btc'])
+			btc = calc_btc(sell_slice, meta['unused_btc'])
 			amount = btc / rate
 
-			@polo.buy(pair, rate, amount)
+			@polo.buy(rate, amount)
 			meta['low'] = 0
-			@database.meta(pair, meta)
-			@database.log_trade('BUY', pair, btc)
+			@database.meta(meta)
+			@database.log_trade('BUY', btc)
 		end
 	end
 
-	def hold(pair, order, low)
+	def hold(order, low)
 		rate = low * @profile['top_price'] * calc_sigma(meta)
+		min = first_in_glass('bids') * @profile['min_sell_mul']
+		rate = min if rate < min
 
 		if order
 			amount = num(order['amount'])
 
 			@polo.replace(order['orderNumber'], rate, amount)
 		else
-			amount = num(@money[pair])
+			amount = num(@money[@pair])
 
-			@polo.sell(pair, rate, amount)
-			@database.log_trade('SELL', pair, rate * amount)
+			@polo.sell(rate, amount)
+			@database.log_trade('SELL', rate * amount)
 		end
 	end
 
-	def actualize_low(pair, meta_low = 0)
+	def actualize_low(meta_low = 0)
 		low = calc_low
 		meta_low = num(meta_low)
 
@@ -144,7 +149,7 @@ class Robot
 		end
 
 		if low != meta_low
-			@database.meta(pair, {:low => low, :low_usdt => @usdt_candle['low']})
+			@database.meta({:low => low, :low_usdt => @usdt_candle['low']})
 		end
 
 		low
@@ -164,7 +169,7 @@ class Robot
 		num(low)
 	end
 
-	def calc_btc(pair, sell_slice, default)
+	def calc_btc(sell_slice, default)
 		unless sell_slice
 			return num(default)
 		end
@@ -172,7 +177,7 @@ class Robot
 		sum = num(0)
 		sell_slice = sell_slice - one_second
 
-		@polo.history(pair, sell_slice).each { |trade|
+		@polo.history(sell_slice).each { |trade|
 			sum += num(trade['total']) * (num(trade['fee']) + -1)
 		}
 
@@ -195,6 +200,10 @@ class Robot
 
 	def is_red_candle(candle)
 		candle['open'] > candle['close']
+	end
+
+	def first_in_glass(type)
+		num(@polo.glass[type].first.first)
 	end
 
 	def parse_date(date)

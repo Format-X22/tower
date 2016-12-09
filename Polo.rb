@@ -16,11 +16,21 @@ class Polo
 		@database = database
 	end
 
-	def candles(pair)
-		if pair == 'USDT'
+	def pair=(pair)
+		@pair = pair
+	end
+
+	def candles(force_pair = nil)
+		if force_pair
+			use_pair = force_pair
+		else
+			use_pair = @pair
+		end
+
+		if use_pair == 'USDT'
 			currency_pair = 'USDT_BTC'
 		else
-			currency_pair = "BTC_#{pair}"
+			currency_pair = "BTC_#{use_pair}"
 		end
 
 		public_api_call({
@@ -32,10 +42,10 @@ class Polo
 						})
 	end
 
-	def glass(pair)
+	def glass
 		public_api_call({
 			:command => 'returnOrderBook',
-			:currencyPair => "BTC_#{pair}",
+			:currencyPair => "BTC_#{@pair}",
 			:depth => 100
 						})
 	end
@@ -54,20 +64,20 @@ class Polo
 						 })
 	end
 
-	def history(pair, from)
+	def history(from)
 		private_api_call({
 			:command => 'returnTradeHistory',
-			:currencyPair => "BTC_#{pair}",
+			:currencyPair => "BTC_#{@pair}",
 			:start => from.to_time.to_i,
 						 })
 	end
 
-	def buy(pair, rate, amount)
-		trade('buy', pair, rate, amount)
+	def buy(rate, amount)
+		trade('buy', rate, amount)
 	end
 
-	def sell(pair, rate, amount)
-		trade('sell', pair, rate, amount)
+	def sell(rate, amount)
+		trade('sell', rate, amount)
 	end
 
 	def replace(id, rate, amount)
@@ -85,10 +95,10 @@ class Polo
 
 	private
 
-	def trade(type, pair, rate, amount)
+	def trade(type, rate, amount)
 		private_api_call({
 			:command => type,
-			:currencyPair => "BTC_#{pair}",
+			:currencyPair => "BTC_#{@pair}",
 			:rate => readable(rate),
 			:amount => readable(amount)
 						 })

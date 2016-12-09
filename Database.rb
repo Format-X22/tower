@@ -6,6 +6,10 @@ class Database
 		@connection = PG.connect(:dbname => db_name)
 	end
 
+	def pair=(pair)
+		@pair = pair
+	end
+
 	def profile
 		result = nil
 
@@ -16,7 +20,7 @@ class Database
 		result
 	end
 
-	def meta(pair, values = nil)
+	def meta(values = nil)
 		if values
 			data = []
 
@@ -30,11 +34,11 @@ class Database
 			end
 
 			query = data.join(', ')
-			exec("UPDATE meta SET #{query} WHERE pair = $1", [pair])
+			exec("UPDATE meta SET #{query} WHERE pair = $1", [@pair])
 		else
 			result = nil
 
-			exec('SELECT * FROM meta WHERE pair = $1', [pair]).each do |row|
+			exec('SELECT * FROM meta WHERE pair = $1', [@pair]).each do |row|
 				result = row
 			end
 
@@ -64,8 +68,8 @@ class Database
 		exec('INSERT INTO log_text (type, text) VALUES ($1, $2)', ['ERROR', text])
 	end
 
-	def log_trade(type, pair, btc)
-		exec('INSERT INTO log_trade (type, pair, btc) VALUES ($1, $2, $3)', [type, pair, btc])
+	def log_trade(type, btc)
+		exec('INSERT INTO log_trade (type, pair, btc) VALUES ($1, $2, $3)', [type, @pair, btc])
 	end
 
 	private
