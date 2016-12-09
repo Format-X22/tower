@@ -133,7 +133,7 @@ class Robot
 		rate = min if rate < min
 
 		if order
-			amount = num(order['amount'])
+			amount = num(order['amount']) + num(@money[@pair])
 
 			@polo.replace(order['orderNumber'], rate, amount)
 		else
