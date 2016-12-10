@@ -48,7 +48,7 @@ class Robot
 
 				trade_pair
 			rescue Exception => exception
-				log_exception(exception)
+				log_exception(exception) if exception.message != 'exit'
 
 				exit_when_stop
 			end
@@ -61,10 +61,6 @@ class Robot
 		meta = @database.meta
 		low = actualize_low(meta['low'])
 
-		p low
-
-		return
-
 		unless low
 			return
 		end
@@ -72,7 +68,7 @@ class Robot
 		if meta['calm']
 			date = parse_date(meta['calm'])
 
-			if date > DateTime.now
+			if date > DateTime.now.new_offset(0) + time_offset
 				return
 			end
 		end
@@ -90,7 +86,7 @@ class Robot
 		case meta['state']
 			when 'buy'
 				meta['state'] = 'hold'
-				meta['sell_slice'] = DateTime.now
+				meta['sell_slice'] = DateTime.now - time_offset
 				meta['unused_btc'] = 0
 			when 'hold'
 				meta['state'] = 'calm'
@@ -198,7 +194,7 @@ class Robot
 
 		@polo.history(sell_slice).each { |trade|
 			if trade['type'] == 'sell'
-				sum += num(trade['total']) * (num(trade['fee']) + -1)
+				sum += num(trade['total']) * (1 - num(trade['fee']))
 			end
 		}
 
@@ -248,14 +244,12 @@ class Robot
 		@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
 	end
 
+	def time_offset
+		3.0 / 24
+	end
+
 	def one_second
 		1 / 24.0 / 60.0 / 60.0
 	end
 
 end
-
-Robot.new(
-	'VFYTOUL8-QMXD4PCQ-LDEMD2GG-MJD9IXY3',
-	'9f7d888231869a591a414a691ec43a9eb02479016b610da7903edc8d656ac713a0beb163645ae963cb2430d476524572a941d33b200b666dae470cf52e8ce22e',
-	'tower'
-)
