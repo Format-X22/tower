@@ -53,7 +53,6 @@ class Polo
 	def money
 		private_api_call({
 			:command => 'returnAvailableAccountBalances',
-			:account => 'exchange'
 						 })['exchange']
 	end
 
@@ -112,8 +111,7 @@ class Polo
 		result = JSON.parse(response)
 
 		if result.is_a?(Hash) and result['error']
-			@database.log_error("#{result['error']} - #{config}")
-			exit
+			raise "#{result['error']} - #{config}"
 		end
 
 		result
@@ -135,8 +133,7 @@ class Polo
 		end
 
 		if result.is_a?(Hash) and result['error']
-			@database.log_error("#{result['error']} - #{config}")
-			exit
+			raise "#{result['error']} - #{config}"
 		end
 
 		result
