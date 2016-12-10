@@ -14,17 +14,17 @@ class Robot
 				@pairs = @database.pairs
 				@profile = @database.profile
 
-				exit if @profile['stop']
+				exit_when_stop
 
 				trade
 
-				sleep @profile['trade_timeout']
+				sleep @profile['trade_timeout'].to_f
 			rescue Exception => exception
-				log_exception(exception)
+				log_exception(exception) if exception.message != 'exit'
 
-				exit if @profile['stop']
+				exit_when_stop
 
-				sleep @profile['trade_timeout'] * @profile['rescue_mul']
+				sleep @profile['trade_timeout'].to_f * @profile['rescue_mul'].to_f
 			end
 		end
 	end
@@ -38,12 +38,19 @@ class Robot
 
 		@pairs.each { |pair|
 			begin
+				@profile = @database.profile
+
+				exit_when_stop
+
 				@pair = pair
 				@polo.pair = pair
 				@database.pair = pair
+
 				trade_pair
 			rescue Exception => exception
 				log_exception(exception)
+
+				exit_when_stop
 			end
 		}
 	end
@@ -53,6 +60,10 @@ class Robot
 
 		meta = @database.meta
 		low = actualize_low(meta['low'])
+
+		p low
+
+		return
 
 		unless low
 			return
@@ -83,7 +94,7 @@ class Robot
 				meta['unused_btc'] = 0
 			when 'hold'
 				meta['state'] = 'calm'
-				meta['calm'] = DateTime.now + @profile['calm_days']
+				meta['calm'] = DateTime.now + @profile['calm_days'].to_f
 			when 'calm'
 				if is_red_candle(@candles.last)
 					meta['state'] = 'buy'
@@ -92,7 +103,7 @@ class Robot
 				# do nothing
 		end
 
-		@database.meta(meta)
+		@database.meta = meta
 	end
 
 	def trade_by_state(meta, low, order)
@@ -122,14 +133,14 @@ class Robot
 
 			@polo.buy(rate, amount)
 			meta['low'] = 0
-			@database.meta(meta)
+			@database.meta = meta
 			@database.log_trade('BUY', btc)
 		end
 	end
 
 	def hold(meta, order, low)
-		rate = low * @profile['top_price'] * calc_sigma(meta)
-		min = first_in_glass('bids') * @profile['min_sell_mul']
+		rate = low * @profile['top_price'].to_f * calc_sigma(meta)
+		min = first_in_glass('bids') * @profile['min_sell_mul'].to_f
 		rate = min if rate < min
 
 		if order
@@ -148,16 +159,16 @@ class Robot
 		low = calc_low
 		meta_low = num(meta_low)
 
+		if low == 0 and meta_low == 0
+			return nil
+		end
+
 		if meta_low != 0 and low > meta_low
 			low = meta_low
 		end
 
-		if low == 0
-			return nil
-		end
-
 		if low != meta_low
-			@database.meta({:low => low, :low_usdt => @usdt_candle['low']})
+			@database.meta = {:low => low, :low_usdt => @usdt_candle['low']}
 		end
 
 		low
@@ -212,6 +223,10 @@ class Robot
 		num(@polo.glass[type].first.first)
 	end
 
+	def exit_when_stop
+		exit if @profile['stop']
+	end
+
 	def parse_date(date)
 		unless date
 			return nil
@@ -238,3 +253,9 @@ class Robot
 	end
 
 end
+
+Robot.new(
+	'VFYTOUL8-QMXD4PCQ-LDEMD2GG-MJD9IXY3',
+	'9f7d888231869a591a414a691ec43a9eb02479016b610da7903edc8d656ac713a0beb163645ae963cb2430d476524572a941d33b200b666dae470cf52e8ce22e',
+	'tower'
+)
