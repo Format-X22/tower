@@ -17,33 +17,39 @@ class Database
 			result = row
 		end
 
+		if result['stop'] == 't'
+			result['stop'] = true
+		else
+			result['stop'] = false
+		end
+
 		result
 	end
 
-	def meta(values = nil)
-		if values
-			data = []
+	def meta
+		result = nil
 
-			values.each do |key, value|
-				data.push("#{key}='#{value}'") if value
-			end
-
-			if data.length == 0
-				log_error('Try save empty meta')
-				return
-			end
-
-			query = data.join(', ')
-			exec("UPDATE meta SET #{query} WHERE pair = $1", [@pair])
-		else
-			result = nil
-
-			exec('SELECT * FROM meta WHERE pair = $1', [@pair]).each do |row|
-				result = row
-			end
-
-			result
+		exec('SELECT * FROM meta WHERE pair = $1', [@pair]).each do |row|
+			result = row
 		end
+
+		result
+	end
+
+	def meta=(values)
+		data = []
+
+		values.each do |key, value|
+			data.push("#{key}='#{value}'") if value
+		end
+
+		if data.length == 0
+			log_error('Try save empty meta')
+			return
+		end
+
+		query = data.join(', ')
+		exec("UPDATE meta SET #{query} WHERE pair = $1", [@pair])
 	end
 
 	def pairs
