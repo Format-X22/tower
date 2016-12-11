@@ -60,6 +60,8 @@ class Robot
 
 		meta = @database.meta
 		low = actualize_low(meta['low'])
+		meta['low'] = low
+		@database.meta = meta
 
 		unless low
 			return
@@ -79,7 +81,7 @@ class Robot
 			next_state(meta)
 		end
 
-		trade_by_state(meta, low, orders[0])
+		trade_by_state(meta, orders[0])
 	end
 
 	def next_state(meta)
@@ -102,12 +104,12 @@ class Robot
 		@database.meta = meta
 	end
 
-	def trade_by_state(meta, low, order)
+	def trade_by_state(meta, order)
 		case meta['state']
 			when 'buy'
 				buy(meta, order)
 			when 'hold'
-				hold(meta, order, low)
+				hold(meta, order)
 			when 'calm'
 				# do nothing
 			else
@@ -134,9 +136,16 @@ class Robot
 		end
 	end
 
-	def hold(meta, order, low)
-		rate = low * @profile['top_price'].to_f * calc_sigma(meta)
+	def hold(meta, order)
+		sigma = calc_sigma(meta)
+		rate = meta['low'] * @profile['top_price'].to_f * sigma
 		min = first_in_glass('bids') * @profile['min_sell_mul'].to_f
+
+		if rate / 10 < min
+			@database.log_warn("So small rate for #{@pair} (rate #{rate}, min #{min}, sigma #{sigma})")
+			return
+		end
+
 		rate = min if rate < min
 
 		if order
