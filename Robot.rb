@@ -141,7 +141,7 @@ class Robot
 		rate = meta['low'] * @profile['top_price'].to_f * sigma
 		min = first_in_glass('bids') * @profile['min_sell_mul'].to_f
 
-		if rate / 10 < min
+		if rate < min / 10
 			@database.log_warn("So small rate for #{@pair} (rate #{rate}, min #{min}, sigma #{sigma})")
 			return
 		end
