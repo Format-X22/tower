@@ -36,7 +36,7 @@ class Robot
 		@orders = @polo.orders
 		@usdt_candle = @polo.candles('USDT').last
 
-		@pairs.each { |pair|
+		@pairs.each do |pair|
 			begin
 				@profile = @database.profile
 
@@ -52,7 +52,7 @@ class Robot
 
 				exit_when_stop
 			end
-		}
+		end
 	end
 
 	def trade_pair
@@ -182,13 +182,13 @@ class Robot
 	def calc_low
 		low = num('+Infinity')
 
-		@candles.each { |candle|
+		@candles.each do |candle|
 			candle_low = num(candle['low'])
 
 			if candle_low < low
 				low = candle_low
 			end
-		}
+		end
 
 		num(low)
 	end
@@ -201,11 +201,11 @@ class Robot
 		sum = num(0)
 		sell_slice = sell_slice - one_second
 
-		@polo.history(sell_slice).each { |trade|
+		@polo.history(sell_slice).each do |trade|
 			if trade['type'] == 'sell'
 				sum += num(trade['total']) * (1 - num(trade['fee']))
 			end
-		}
+		end
 
 		sum + unused
 	end
@@ -258,7 +258,7 @@ class Robot
 	end
 
 	def one_second
-		1 / 24.0 / 60.0 / 60.0
+		1.0 / 24.0 / 60.0 / 60.0
 	end
 
 end
