@@ -2,12 +2,15 @@ require 'date'
 require 'bigdecimal'
 require_relative 'Polo'
 require_relative 'Database'
+require_relative 'Guard'
 
 class Robot
 
 	def initialize (key, secret, db_name)
 		@database = Database.new(db_name)
 		@polo = Polo.new(key, secret, @database)
+
+		guard = Guard.new
 
 		while true
 			begin
@@ -16,7 +19,9 @@ class Robot
 
 				exit_when_stop
 
-				trade
+				if guard.check_de_listing == 'ok'
+					trade
+				end
 
 				sleep @profile['trade_timeout'].to_f
 			rescue Exception => exception
