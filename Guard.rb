@@ -62,7 +62,7 @@ class Guard
 					num(money[pair]),
 					pair_orders(pair, all_orders)
 				)
-			rescue  Exception => exception
+			rescue Exception => exception
 				log_exception(exception, 'Panic sell error - ')
 			end
 		end
@@ -77,7 +77,11 @@ class Guard
 				rate = first_in_glass('bids')
 				amount = num(order['amount'])
 
-				@polo.replace(order['orderNumber'], rate, amount)
+				begin
+					@polo.replace(order['orderNumber'], rate, amount)
+				rescue Exception => exception
+					log_exception(exception, 'Panic sell error - ')
+				end
 			end
 		else
 			make_panic_sell_train(pair_money).each do |wagon|
