@@ -253,7 +253,6 @@ class Robot
 
 	def log_exception(exception)
 		puts exception.message
-		puts exception.backtrace.inspect
 
 		@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
 	end
