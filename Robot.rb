@@ -1,16 +1,18 @@
 require 'date'
-require 'bigdecimal'
 require_relative 'Polo'
 require_relative 'Database'
 require_relative 'Guard'
+require_relative 'Utils'
 
 class Robot
+
+	include Utils
 
 	def initialize (key, secret, db_name)
 		@database = Database.new(db_name)
 		@polo = Polo.new(key, secret, @database)
 
-		guard = Guard.new
+		guard = Guard.new(@database, @polo)
 
 		while true
 			begin
@@ -80,7 +82,7 @@ class Robot
 			end
 		end
 
-		orders = @orders["BTC_#{@pair}"]
+		orders = pair_orders(@pair, @orders)
 
 		if orders.length == 0
 			next_state(meta)
@@ -223,46 +225,6 @@ class Robot
 		end
 
 		num(@usdt_candle['low']) / usdt_low
-	end
-
-	def is_red_candle(candle)
-		candle['open'] > candle['close']
-	end
-
-	def first_in_glass(type)
-		num(@polo.glass[type].first.first)
-	end
-
-	def exit_when_stop
-		exit if @profile['stop']
-	end
-
-	def parse_date(date)
-		unless date
-			return nil
-		end
-
-		DateTime.strptime(date, '%Y-%m-%d %H:%M:%S')
-	end
-
-	def num(number)
-		number = (number or 0)
-
-		BigDecimal.new(number.to_s)
-	end
-
-	def log_exception(exception)
-		puts exception.message
-
-		@database.log_error("#{exception.message} --- #{exception.backtrace.inspect}")
-	end
-
-	def time_offset
-		3.0 / 24
-	end
-
-	def one_second
-		1.0 / 24.0 / 60.0 / 60.0
 	end
 
 end
