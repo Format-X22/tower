@@ -43,8 +43,10 @@ class Guard
 
 		pairs.each do |pair|
 			if text.match(pair)
-				if num(money[pair]) > 0 or pair_orders(pair, all_orders)
+				if num(money[pair]) > 0 or pair_orders(pair, all_orders).length > 0
 					de_listed.push(pair)
+				else
+					@database.stop_pair_trade
 				end
 			end
 		end
@@ -95,10 +97,10 @@ class Guard
 	def make_panic_sell_train(total_amount)
 		glass = @polo.glass['bids']
 		train = []
-		glass.pop
+		glass.shift
 
 		while total_amount > 0
-			order = glass.pop
+			order = glass.shift
 			rate = num(order[0])
 			amount = num(order[1])
 

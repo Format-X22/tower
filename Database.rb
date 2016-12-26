@@ -78,6 +78,10 @@ class Database
 		exec('INSERT INTO log_trade (type, pair, btc) VALUES ($1, $2, $3)', [type, @pair, btc])
 	end
 
+	def stop_pair_trade
+		exec('UPDATE pairs SET trade = FALSE WHERE pair = $1', [@pair])
+	end
+
 	private
 
 	def exec(query, *params)
