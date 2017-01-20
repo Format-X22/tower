@@ -42,7 +42,7 @@ class Guard
 		all_orders = @polo.orders
 
 		pairs.each do |pair|
-			if text.match(pair)
+			if /\s#{pair}|,#{pair}|:#{pair}/.match(text)
 				if num(money[pair]) > 0 or pair_orders(pair, all_orders).length > 0
 					de_listed.push(pair)
 				else
