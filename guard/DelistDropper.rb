@@ -1,0 +1,3 @@
+class DelistDropper
+	#
+end
