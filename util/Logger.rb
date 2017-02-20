@@ -1,8 +1,7 @@
 require_relative '../db/Abstract'
 require_relative './Format'
 
-class Logger
-	extend Abstract
+class Logger < Abstract
 
 	def log(message, prefix = nil)
 		log_universal(

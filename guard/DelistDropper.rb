@@ -1,7 +1,6 @@
 require_relative './Abstract'
 
-class DelistDropper
-	extend Abstract
+class DelistDropper < Abstract
 
 	#
 end

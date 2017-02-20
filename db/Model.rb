@@ -1,7 +1,6 @@
 require_relative './Abstract'
 
-class Model
-	extend Abstract
+class Model < Abstract
 
 	#
 end

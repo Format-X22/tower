@@ -1,7 +1,5 @@
 require_relative './Abstract'
 
-class PumpHunter
-	extend Abstract
-
+class PumpHunter < Abstract
 	#
 end

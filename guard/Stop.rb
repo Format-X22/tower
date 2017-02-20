@@ -1,7 +1,6 @@
 require_relative './Abstract'
 
-class Stop
-	extend Abstract
+class Stop < Abstract
 
 	#
 end
