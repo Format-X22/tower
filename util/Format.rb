@@ -1,3 +1,6 @@
+require 'date'
+require 'bigdecimal'
+
 class Format
 
 	def self.readable_num(num)
@@ -14,6 +17,14 @@ class Format
 		else
 			date.to_time.to_i
 		end
+	end
+
+	def parse_date(date)
+		DateTime.strptime(date, '%Y-%m-%d %H:%M:%S')
+	end
+
+	def num(number = '0')
+		BigDecimal.new(number.to_s)
 	end
 
 end
