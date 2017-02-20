@@ -47,33 +47,37 @@ class Logger
 	private
 
 	def log_universal(message:, prefix:, query:, params:, push_text: true)
-		if message.is_a? Exception
-			text = make_text_with_trace(message)
-			short_text = make_text(message.message, prefix)
+		text_object = make_text(message, prefix)
 
-			p make_text_with_date(short_text)
-		else
-			text = make_text(message, prefix)
+		p text_object[:console]
 
-			p make_text_with_date(text)
-		end
-
-		params.push(text) if push_text
+		params.push(text_object[:database]) if push_text
 
 		exec(query, params)
 	end
 
-	def make_text(text, prefix)
-		"[#{prefix or 'Void'}] #{text}"
+	def make_text(message, prefix)
+		if message.is_a? Exception
+			error = message
+			text = make_text_with_prefix(error.message, prefix)
+			database = "#{text} --- #{error.backtrace.inspect}"
+			console = make_text_with_date(text)
+		else
+			database = make_text_with_prefix(message, prefix)
+			console = make_text_with_date(database)
+		end
+
+		{
+			console: console,
+			database: database
+		}
 	end
 
 	def make_text_with_date(text)
 		"#{Time.now} >>> #{text}"
 	end
 
-	def make_text_with_trace(error)
-		text = make_text(error.message, nil)
-
-		"#{text} --- #{error.backtrace.inspect}"
+	def make_text_with_prefix(text, prefix)
+		"[#{prefix or 'Void'}] #{text}"
 	end
 end
