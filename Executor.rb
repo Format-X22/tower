@@ -20,6 +20,10 @@ class Executor
 		#
 	end
 
+	def stop_trade
+		#
+	end
+
 	def btc_sigma
 		#
 	end
@@ -33,6 +37,10 @@ class Executor
 	end
 
 	def replace_order(id, rate, amount)
+		#
+	end
+
+	def remove_order(id)
 		#
 	end
 
