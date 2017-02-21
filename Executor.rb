@@ -28,7 +28,7 @@ class Executor
 		#
 	end
 
-	def replace_order
+	def replace_order(id, rate, amount)
 		#
 	end
 
@@ -36,15 +36,15 @@ class Executor
 		#
 	end
 
-	def delisting_words?
+	def delisting_words?(text)
 		#
 	end
 
-	def pair_name?
+	def pair_name?(text)
 		#
 	end
 
-	def add_coin_words?
+	def add_coin_words?(text)
 		#
 	end
 

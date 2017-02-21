@@ -1,6 +1,6 @@
-require_relative 'AbstractDSL'
+require_relative 'Implementer'
 
-class Algorithm < AbstractDSL
+class Algorithm < Implementer
 
 	def trade
 		if delisted?

@@ -1,7 +1,7 @@
 require 'date'
-require_relative 'AbstractDSL'
+require_relative 'Executor'
 
-class Implementer < AbstractDSL
+class Implementer < Executor
 
 	def state(state = nil)
 		if state
