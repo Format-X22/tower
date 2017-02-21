@@ -32,4 +32,23 @@ class Executor
 		#
 	end
 
+	def stock_news
+		#
+	end
+
+	def delisting_words?
+		#
+	end
+
+	def pair_name?
+		#
+	end
+
+	def add_coin_words?
+		#
+	end
+
+	def now
+		DateTime.now.new_offset(0)
+	end
 end

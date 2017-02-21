@@ -44,10 +44,6 @@ class Implementer < AbstractDSL
 		end
 	end
 
-	def remove
-		#
-	end
-
 	def stop_trade!
 		#
 	end
@@ -61,14 +57,30 @@ class Implementer < AbstractDSL
 	end
 
 	def delisted?
-		#
-	end
+		delisted = false
 
-	def btc_pump?
-		#
+		stock_news.each do |post|
+			if delisting_words?(post.text) and pair_name?(post.text)
+				delisted = true
+			end
+		end
+
+		delisted
 	end
 
 	def new_coin_add?
+		new_coin = false
+
+		stock_news.each do |post|
+			if add_coin_words?(post.text) and now - profile.new_coin_wait_offset < post.date
+				new_coin = true
+			end
+		end
+
+		new_coin
+	end
+
+	def btc_pump?
 		#
 	end
 
@@ -77,7 +89,7 @@ class Implementer < AbstractDSL
 	end
 
 	def wait?
-		meta.calm > DateTime.now.new_offset(0)
+		meta.calm > now
 	end
 
 end
