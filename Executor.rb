@@ -1,5 +1,9 @@
 class Executor
 
+	def initialize(pair:)
+		@pair = pair
+	end
+
 	def profile
 		#
 	end
@@ -37,15 +41,15 @@ class Executor
 	end
 
 	def delisting_words?(text)
-		#
+		text.match('delist')
 	end
 
 	def pair_name?(text)
-		#
+		/\s#{@pair}|,#{@pair}|:#{@pair}/.match(text)
 	end
 
 	def add_coin_words?(text)
-		#
+		text.match('added') and text.match('/BTC')
 	end
 
 	def now
