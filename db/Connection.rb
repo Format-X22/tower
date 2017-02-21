@@ -1,3 +1,5 @@
+require 'pg'
+
 class Connection
 
 	def initialize(db_name)
