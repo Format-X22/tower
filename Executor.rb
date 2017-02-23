@@ -8,6 +8,14 @@ class Executor
 		#
 	end
 
+	def low_tick
+		#
+	end
+
+	def glass
+		#
+	end
+
 	def profile
 		#
 	end

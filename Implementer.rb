@@ -84,19 +84,25 @@ class Implementer < Executor
 	end
 
 	def optimal_ask_rate
-		#
+		glass.asks.first.rate
 	end
 
 	def optimal_bid_rate
-		#
+		glass.bids.first.rate
 	end
 
 	def earned_capital(from)
-		#
+		result = 0
+
+		history(from).sell.each do |event|
+			result += event.total * (1 - event.fee)
+		end
+
+		result
 	end
 
 	def btc_sigma
-		#
+		low_tick.usdt.low / tick.usdt.low
 	end
 
 end
