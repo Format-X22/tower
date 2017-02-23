@@ -80,10 +80,6 @@ class Implementer < Executor
 		new_coin
 	end
 
-	def btc_pump?
-		#
-	end
-
 	def stop?
 		profile.stop
 	end

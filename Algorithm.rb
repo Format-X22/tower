@@ -12,7 +12,7 @@ class Algorithm < Implementer
 			return
 		end
 
-		if btc_pump? or new_coin_add?
+		if new_coin_add?
 			sell!
 			return
 		end
