@@ -4,6 +4,10 @@ class Executor
 		@pair = pair
 	end
 
+	def tick
+		#
+	end
+
 	def profile
 		#
 	end
@@ -24,43 +28,24 @@ class Executor
 		#
 	end
 
-	def btc_sigma
+	def buy_order(rate, amount)
 		#
+
+		log_trade('BUY', rate * amount)
 	end
 
-	def optimal_ask_rate
+	def sell_order(rate, amount)
 		#
-	end
 
-	def optimal_bid_rate
-		#
+		log_trade('SELL', rate * amount)
 	end
 
 	def replace_order(id, rate, amount)
 		#
 	end
 
-	def remove_order(id)
-		#
-	end
-
-	def stock_news
-		#
-	end
-
-	def delisting_words?(text)
-		text.match('delist')
-	end
-
-	def pair_name?(text)
-		/\s#{@pair}|,#{@pair}|:#{@pair}/.match(text)
-	end
-
-	def add_coin_words?(text)
-		text.match('added') and text.match('/BTC')
-	end
-
 	def now
 		DateTime.now.new_offset(0)
 	end
+
 end
