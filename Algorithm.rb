@@ -3,17 +3,7 @@ require_relative 'Implementer'
 class Algorithm < Implementer
 
 	def trade
-		if delisted?
-			stop_trade!
-			return
-		end
-
 		if stop? or wait?
-			return
-		end
-
-		if new_coin_add?
-			sell!
 			return
 		end
 
