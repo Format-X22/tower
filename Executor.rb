@@ -1,80 +1,74 @@
 require 'big_decimal'
+require_relative 'model/Candles'
+require_relative 'model/Glass'
+require_relative 'model/Profile'
+require_relative 'model/Meta'
+require_relative 'model/Order'
+require_relative 'model/Money'
+require_relative 'model/Trader'
+require_relative 'model/Utils'
 
 class Executor
 
-	def initialize(db:, polo:)
-		@db = db
-		@polo = polo
+	def initialize(context)
+		@candles = Candles.new(context)
+		@glass = Glass.new(context)
+		@profile = Profile.new(context)
+		@meta = Meta.new(context)
+		@order = Order.new(context)
+		@money = Money.new(context)
+		@trader = Trader.new(context)
+		@utils = Utils.new
 	end
 
 	def tick
-		old_candle = @db.last_candle
-		candles = @polo.candles(old_candle.date)
-
-		if candles
-			@db.merge_candles(candles)
-			@db.last_candle
-		else
-			old_candle
-		end
+		@candles.sync
+		@candles.last_candle
 	end
 
 	def low_tick
-		#
+		@candles.sync
+		@candles.low_from(now - profile.low_reset_time)
 	end
 
 	def glass
-		@polo.glass
+		@glass.get
 	end
 
 	def profile
-		profile_data = @db.profile
-
-		#
+		@profile.get
 	end
 
 	def meta
-		meta_data = @db.meta
-
-		#
+		@meta.get
 	end
 
 	def order
-		orders_data = @polo.orders
-
-		#
+		@order.get
 	end
 
 	def money
-		num(@polo.money)
+		@money.get
 	end
 
 	def stop_trade
-		@db.stop_trade
+		@trader.stop_trade
 	end
 
 	def buy_order(rate, amount)
-		@polo.buy(rate, amount)
-
-		log_trade('BUY', rate * amount)
+		@trader.buy(rate, amount)
 	end
 
 	def sell_order(rate, amount)
-		@polo.sell(rate, amount)
-
-		log_trade('SELL', rate * amount)
+		@trader.sell(rate, amount)
 	end
 
 	def replace_order(id, rate, amount)
-		@polo.replace(id, rate, amount)
+		@trader.replace(id, rate, amount)
 	end
 
 	def now
-		DateTime.now.new_offset(0)
-	end
-
-	def num(number)
-		BigDecimal.new(number.to_s)
+		@utils.now
 	end
 
 end
