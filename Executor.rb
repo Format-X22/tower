@@ -18,7 +18,7 @@ class Executor
 		@order = Order.new(context)
 		@money = Money.new(context)
 		@trader = Trader.new(context)
-		@utils = Utils.new
+		@utils = UtilsMixed.new
 	end
 
 	def tick

@@ -1,3 +1,5 @@
+require_relative 'Abstract'
+
 class Meta < Abstract
 
 	def get
@@ -14,26 +16,30 @@ class MetaAccessor
 	attr_reader :state, :sell_start_time, :calm, :calm_offset, :extra_btc, :low
 
 	def initialize(raw, initiator)
-		i = initiator
+		validate = initiator.validate
 
-		@state =           raw['state']
+		@state           = raw['state']
 		@sell_start_time = raw['sell_start_time']
-		@calm =            raw['calm']
-		@calm_offset =     raw['calm_offset']
-		@extra_btc =       raw['extra_btc']
-		@low =             raw['low']
+		@calm            = raw['calm']
+		@calm_offset     = raw['calm_offset']
+		@extra_btc       = raw['extra_btc']
+		@low             = raw['low']
 
-		@sell_start_time = i.parse_date(@sell_start_time)
-		@calm =            i.parse_date(@calm)
+		@sell_start_time = initiator.parse_date(@sell_start_time)
+		@calm            = initiator.parse_date(@calm)
 
-		i.validate_string(@state)
-		i.validate_date(@sell_start_time)
-		i.validate_date(@calm)
-		i.validate_int(@calm_offset)
-		i.validate_int(@extra_btc)
-		i.validate_float(@low)
+		validate.string(@state)
+		validate.date(@sell_start_time)
+		validate.date(@calm)
+		validate.int(@calm_offset)
+		validate.int(@extra_btc)
+		validate.float(@low)
 
-		@initiator = i
+		@calm_offset = initiator.num(@calm_offset)
+		@extra_btc   = initiator.num(@extra_btc)
+		@low         = initiator.num(@low)
+
+		@initiator = initiator
 	end
 
 	def state=(value)

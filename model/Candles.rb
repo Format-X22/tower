@@ -1,3 +1,5 @@
+require_relative 'Abstract'
+
 class Candles < Abstract
 
 	def sync
@@ -16,7 +18,7 @@ class Candles < Abstract
 		low_candle = nil
 		low_ratio = nil
 
-		@candles.from(from).each do |candle|
+		from(from).each do |candle|
 			unless low_candle
 				low_candle = candle
 				low_ratio = low_candle.low / candle.usdt.average

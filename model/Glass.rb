@@ -1,3 +1,5 @@
+require_relative 'Abstract'
+
 class Glass < Abstract
 
 	def get
@@ -30,8 +32,16 @@ class GlassOrder
 	attr_reader :rate, :amount
 
 	def initialize(raw_order, initiator)
-		@rate =   initiator.validate_float(raw_order[0])
-		@amount = initiator.validate_int(raw_order[1])
+		validate = initiator.validate
+
+		@rate =   raw_order[0]
+		@amount = raw_order[1]
+
+		validate.float(raw_order[0])
+		validate.int(raw_order[1])
+
+		@rate =   initiator.num(@rate)
+		@amount = initiator.num(@amount)
 	end
 
 end

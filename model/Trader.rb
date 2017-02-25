@@ -1,3 +1,5 @@
+require_relative 'Abstract'
+
 class Trader
 
 	def stop_trade

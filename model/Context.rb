@@ -1,12 +1,9 @@
-class Context < Abstract
-	attr_reader :db, :polo, :stock, :profile, :pair
+class Context
+	attr_reader :db, :stock
 
-	def initialize(db:, polo:, stock:, profile:, pair:)
+	def initialize(db, stock)
 		@db = db
-		@polo = polo
 		@stock = stock
-		@profile = profile
-		@pair = pair
 	end
 
 end

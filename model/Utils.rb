@@ -1,4 +1,4 @@
-class Utils
+class UtilsMixed
 
 	def num(number)
 		BigDecimal.new(number.to_s)
@@ -12,7 +12,11 @@ class Utils
 		DateTime.strptime(date, '%Y-%m-%d %H:%M:%S')
 	end
 
-	def validate_date(value)
+end
+
+class UtilsValidate
+
+	def date(value)
 		unless value.is_a? Date
 			raise "#{value} is not a date"
 		end
@@ -20,7 +24,7 @@ class Utils
 		value
 	end
 
-	def validate_int(value)
+	def int(value)
 		unless value.is_a? Integer
 			raise "#{value} is not a int"
 		end
@@ -28,7 +32,7 @@ class Utils
 		value
 	end
 
-	def validate_float(value)
+	def float(value)
 		unless value.is_a? Float
 			raise "#{value} is not a float"
 		end
@@ -36,7 +40,7 @@ class Utils
 		value
 	end
 
-	def validate_string(value)
+	def string(value)
 		unless value.is_a? String
 			raise "#{value} is not a string"
 		end
