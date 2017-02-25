@@ -4,10 +4,13 @@ require 'openssl'
 require 'net/http'
 require 'json'
 
-require_relative './Abstract'
 require_relative '../util/Format'
 
-class Polo < Abstract
+class Polo
+
+	def initialize(pair)
+		@pair = pair
+	end
 
 	def candles(from, to, pair = @pair)
 		to = 9999999999 unless to
