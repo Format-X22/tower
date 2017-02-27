@@ -19,12 +19,4 @@ class Format
 		end
 	end
 
-	def self.parse_date(date)
-		DateTime.strptime(date, '%Y-%m-%d %H:%M:%S')
-	end
-
-	def self.num(number = '0')
-		BigDecimal.new(number.to_s)
-	end
-
 end

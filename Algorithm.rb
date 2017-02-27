@@ -22,7 +22,7 @@ class Algorithm < Implementer
 				if red_candle?
 					state 'buy'
 				end
-			else
+			else #
 		end
 	end
 
@@ -35,7 +35,7 @@ class Algorithm < Implementer
 		case state
 			when 'buy'  then buy
 			when 'hold' then sell
-			else
+			else #
 		end
 	end
 

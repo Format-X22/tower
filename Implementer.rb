@@ -13,7 +13,7 @@ class Implementer < Executor
 				meta.sell_start_time = now
 			when 'calm'
 				meta.calm = now + meta.calm_offset
-			else
+			else #
 		end
 
 		meta.extra_btc = 0
@@ -36,7 +36,7 @@ class Implementer < Executor
 		case order.type
 			when 'buy'  then replace_buy
 			when 'sell' then replace_sell
-			else
+			else #
 		end
 	end
 

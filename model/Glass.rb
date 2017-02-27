@@ -1,16 +1,17 @@
+require 'ostruct'
 require_relative 'Abstract'
 
 class Glass < Abstract
 
 	def get
-		raw = @stock.glass
+		raw = OpenStruct.new(@stock.glass)
 
-		asks = raw['asks'].map do |order|
-			GlassOrder.new(order, self)
+		asks = raw.asks.map do |order|
+			GlassOrder.new(order)
 		end
 
-		bids = raw['bids'].map do |order|
-			GlassOrder.new(order, self)
+		bids = raw.bids.map do |order|
+			GlassOrder.new(order)
 		end
 
 		GlassContainer.new(asks, bids)
@@ -29,19 +30,13 @@ class GlassContainer
 end
 
 class GlassOrder
+	include Utils
+
 	attr_reader :rate, :amount
 
-	def initialize(raw_order, initiator)
-		validate = initiator.validate
-
-		@rate =   raw_order[0]
-		@amount = raw_order[1]
-
-		validate.float(raw_order[0])
-		validate.int(raw_order[1])
-
-		@rate =   initiator.num(@rate)
-		@amount = initiator.num(@amount)
+	def initialize(raw_order)
+		@rate =   num(raw_order[0])
+		@amount = num(raw_order[1])
 	end
 
 end
