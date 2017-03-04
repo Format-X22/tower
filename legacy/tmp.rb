@@ -22,14 +22,6 @@ def listed?
 	new_coin
 end
 
-def reset_calm_type
-	meta.calm_type = 'normal'
-end
-
-def set_listed_calm_type
-	meta.calm_type = 'add_coin'
-end
-
 def store_listed_calm_time
 	meta.calm = now + calm.add_coin
 end
