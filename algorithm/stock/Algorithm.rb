@@ -14,14 +14,15 @@ class Algorithm < Implementer
 		end
 
 		if listed_recently?
-			sell(all_pairs_in_bag)
+			sell(all_traded_pairs)
 			wait_listed_hype_end
 			return false
 		end
 
 		if harvesting?
 			ratably_decrement_pairs_on(harvesting_usd)
-			ratably_sell_part(all_pairs_in_bag, harvesting_usd)
+			ratably_sell_part(all_traded_pairs, harvesting_usd)
+			stop_harvesting
 			return false
 		end
 
