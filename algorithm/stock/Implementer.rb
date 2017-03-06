@@ -2,6 +2,84 @@ require_relative 'Executor'
 
 class Implementer < Executor
 
+	def stop?
+		#
+	end
+
+	def wait?
+		#
+	end
+
+	def delisted_in_bag?
+		#
+	end
+
+	def mark_trade_off(pairs)
+		#
+	end
+
+	def delisted
+		#
+	end
+
+	def sell(pairs)
+		#
+	end
+
+	def listed_recently?
+		#
+	end
+
+	def all_pairs_in_bag
+		#
+	end
+
+	def wait_listed_hype_end
+		#
+	end
+
+	def harvesting?
+		#
+	end
+
+	def ratably_decrement_pairs_on(usd)
+		#
+	end
+
+	def harvesting_usd
+		#
+	end
+
+	def ratably_sell_part(pairs, usd)
+		#
+	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=begin
 	@listed = nil
 	@delisted = nil
 
@@ -67,5 +145,6 @@ class Implementer < Executor
 	def harvesting_usd
 		profile.harvesting_usd
 	end
+=end
 
 end
