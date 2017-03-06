@@ -33,7 +33,10 @@ class Implementer < Executor
 		add_new_pairs
 
 		listed.each do |pair|
-			if pairs.get_add_time(pair) > listed_actual_offset_time
+			add_time = pairs.get_add_time(pair)
+			offset = profile.listed_actual_offset
+
+			if add_time + offset > now
 				result = true
 				break
 			end
@@ -59,12 +62,12 @@ class Implementer < Executor
 	end
 
 	def wait_listed_hype_end
-		offset = listed_hype_offset_time
+		calm = now + profile.listed_hype_offset
 
-		profile.calm = offset
+		profile.calm = calm
 
 		all_traded_pairs.each do |pair|
-			pairs.min_calm_for(pair, offset)
+			pairs.min_calm_for(pair, calm)
 		end
 	end
 
@@ -114,47 +117,5 @@ class Implementer < Executor
 			pairs.add(pair)
 		end
 	end
-
-	def listed_hype_offset_time
-		now + profile.listed_hype_offset
-	end
-
-	def listed_actual_offset_time
-		now - profile.listed_actual_offset
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=begin
-
-	def sell_to(pairs, usd)
-		btc = usd / usdt_rate
-		pair_btc =  btc / pairs.length
-
-		pairs.each do |pair|
-			sell_order(pair, pair_btc)
-		end
-	end
-
-=end
 
 end
