@@ -38,11 +38,6 @@ def listed_condition?(post)
 	in_add_state or (in_text and in_news_offset)
 end
 
-
-def delisting_words?(text)
-	text.match('delist')
-end
-
 def pair_name?(text)
 	/\s#{@pair}|,#{@pair}|:#{@pair}/.match(text)
 end

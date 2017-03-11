@@ -2,8 +2,6 @@ require_relative 'Executor'
 
 class Implementer < Executor
 
-	attr_reader :listed, :delisted
-
 	def stop?
 		profile.stop
 	end
@@ -23,7 +21,7 @@ class Implementer < Executor
 	def delisted_in_bag?
 		extract_delisted
 
-		@delisted.length > 0
+		delisted.length > 0
 	end
 
 	def listed_recently?
@@ -72,7 +70,9 @@ class Implementer < Executor
 	end
 
 	def ratably_decrement_pairs_on(usd)
-		#
+		btc = calc_btc(usd)
+
+		pairs.decrement_all_on(btc)
 	end
 
 	def harvesting_usd
@@ -80,42 +80,21 @@ class Implementer < Executor
 	end
 
 	def ratably_sell_part(pairs, usd)
-		#
+		btc = calc_btc(usd)
+
+		ratably_sell_order(pairs, btc)
 	end
 
 	private
-
-	def extract_listed
-		@listed = []
-
-		stock_news.each do |post|
-			if listing_words?(post)
-				@listed << extract_pairs(post)
-			end
-		end
-
-		@listed.flatten!.uniq!
-
-		@listed = @listed - pairs.all
-	end
-
-	def extract_delisted
-		@delisted = []
-
-		stock_news.each do |post|
-			if delisting_words?(post)
-				@delisted << extract_pairs(post)
-			end
-		end
-
-		@delisted.flatten!.uniq!
-		@delisted = @delisted & pairs.traded
-	end
 
 	def add_new_pairs
 		listed.each do |pair|
 			pairs.add(pair)
 		end
+	end
+
+	def calc_btc(usd)
+		usd / usdt_rate
 	end
 
 end

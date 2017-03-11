@@ -1,14 +1,14 @@
 require 'big_decimal'
-require_relative 'model/Candles'
-require_relative 'model/Glass'
-require_relative 'model/Profile'
-require_relative 'model/Meta'
-require_relative 'model/Order'
-require_relative 'model/Money'
-require_relative 'model/Trader'
-require_relative 'model/Utils'
+require_relative '../Abstract'
+require_relative '../../model/Candles'
+require_relative '../../model/Glass'
+require_relative '../../model/Profile'
+require_relative '../../model/Meta'
+require_relative '../../model/Order'
+require_relative '../../model/Money'
+require_relative '../../model/Trader'
 
-class Executor
+class Executor < Abstract
 
 	def initialize(context)
 		@candles = Candles.new(context)
@@ -18,7 +18,6 @@ class Executor
 		@order = Order.new(context)
 		@money = Money.new(context)
 		@trader = Trader.new(context)
-		@utils = Utils.new
 	end
 
 	def tick
@@ -65,10 +64,6 @@ class Executor
 
 	def replace_order(id, rate, amount)
 		@trader.replace(id, rate, amount)
-	end
-
-	def now
-		@utils.now
 	end
 
 end
