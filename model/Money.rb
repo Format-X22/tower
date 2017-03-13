@@ -1,9 +1,9 @@
 require_relative 'Abstract'
 
-class Money
+class Money < Abstract
 
 	def get
-		#
+		num(@stock.money)
 	end
 
 end

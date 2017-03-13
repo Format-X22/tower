@@ -10,3 +10,7 @@ class Abstract
 		@stock = context.stock
 	end
 end
+
+class AbstractAccessor
+	include Utils
+end

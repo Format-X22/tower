@@ -1,6 +1,6 @@
 require_relative 'Abstract'
 
-class Trader
+class Trader < Abstract
 
 	def stop_trade
 		#

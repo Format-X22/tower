@@ -29,9 +29,7 @@ class GlassContainer
 
 end
 
-class GlassOrder
-	include Utils
-
+class GlassOrder < AbstractAccessor
 	attr_reader :rate, :amount
 
 	def initialize(raw_order)

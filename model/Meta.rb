@@ -9,9 +9,7 @@ class Meta < Abstract
 
 end
 
-class MetaAccessor
-	include Utils
-
+class MetaAccessor < AbstractAccessor
 	attr_reader :state, :sell_start_time, :calm, :calm_offset, :extra_btc, :low
 
 	def initialize(db)

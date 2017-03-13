@@ -45,7 +45,7 @@ class Implementer < Executor
 	end
 
 	def open_order?
-		order.open.length > 0
+		order != nil
 	end
 
 	def stop?
