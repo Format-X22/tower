@@ -43,7 +43,7 @@ class Executor < Abstract
 	end
 
 	def order
-		@order.get
+		@order.get.first
 	end
 
 	def money
