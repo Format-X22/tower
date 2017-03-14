@@ -38,7 +38,7 @@ class Model::Glass < Model::Abstract
 		attr_reader :rate, :amount
 
 		def initialize(raw_order)
-			@rate =   num(raw_order[0])
+			@rate   = num(raw_order[0])
 			@amount = num(raw_order[1])
 		end
 

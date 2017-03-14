@@ -14,10 +14,10 @@ class Model::Order < Model::Abstract
 		def initialize(raw)
 			struct = OpenStruct.new(raw)
 
-			@id =     num(struct.orderNumber)
-			@rate =   num(struct.rate)
+			@id     = num(struct.orderNumber)
+			@rate   = num(struct.rate)
 			@amount = num(struct.amount)
-			@type =   struct.type
+			@type   = struct.type
 		end
 	end
 
