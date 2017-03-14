@@ -1,7 +1,6 @@
-require 'ostruct'
-require_relative 'Abstract'
+require_relative '_'
 
-class Candles < Abstract
+class Model::Candles < Model::Abstract
 
 	def sync
 		last_timestamp = @db.candles.last.date
@@ -49,14 +48,14 @@ class Candles < Abstract
 		end
 	end
 
-end
+	class Candle < Model::AbstractAccessor
 
-class Candle < AbstractAccessor
+		def initialize(raw)
+			struct = OpenStruct.new(raw)
 
-	def initialize(raw)
-		struct = OpenStruct.new(raw)
+			#
+		end
 
-		#
 	end
 
 end

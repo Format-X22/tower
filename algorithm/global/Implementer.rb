@@ -1,6 +1,6 @@
-require_relative 'Executor'
+require_relative '_'
 
-class Implementer < Executor
+class Algorithm::Global::Implementer < Algorithm::Global::Executor
 
 	#
 

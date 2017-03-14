@@ -1,6 +1,6 @@
-require_relative '../Abstract'
+require_relative '_'
 
-class Executor < Abstract
+class Algorithm::Global::Executor < Algorithm::Abstract
 
 	#
 

@@ -1,7 +1,6 @@
-require 'date'
-require_relative 'Executor'
+require_relative '_'
 
-class Implementer < Executor
+class Algorithm::Pair::Implementer < Algorithm::Pair::Executor
 
 	def state(state = nil)
 		unless state
@@ -84,11 +83,11 @@ class Implementer < Executor
 	end
 
 	def optimal_ask_rate
-		glass.asks.first.rate
+		glass.top_ask_rate
 	end
 
 	def optimal_bid_rate
-		glass.bids.first.rate
+		glass.top_bid_rate
 	end
 
 	def earned_capital(from)

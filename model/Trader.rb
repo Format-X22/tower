@@ -1,6 +1,6 @@
-require_relative 'Abstract'
+require_relative '_'
 
-class Trader < Abstract
+class Model::Trader < Model::Abstract
 
 	def stop_trade
 		@db.stop_trade

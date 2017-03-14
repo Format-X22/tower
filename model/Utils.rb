@@ -1,4 +1,6 @@
-class Utils
+require_relative '_'
+
+class Model::Utils
 
 	def num(number)
 		BigDecimal.new(number.to_s)

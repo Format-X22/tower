@@ -1,7 +1,6 @@
-require 'ostruct'
-require_relative 'Abstract'
+require_relative '_'
 
-class Order < Abstract
+class Model::Order < Model::Abstract
 
 	def get
 		@stock.orders.map do |order|
@@ -9,17 +8,17 @@ class Order < Abstract
 		end
 	end
 
-end
+	class OrderAccessor < Model::AbstractAccessor
+		attr_reader :id, :rate, :amount, :type
 
-class OrderAccessor < AbstractAccessor
-	attr_reader :id, :rate, :amount, :type
+		def initialize(raw)
+			struct = OpenStruct.new(raw)
 
-	def initialize(raw)
-		struct = OpenStruct.new(raw)
-
-		@id =     num(struct.orderNumber)
-		@rate =   num(struct.rate)
-		@amount = num(struct.amount)
-		@type =   struct.type
+			@id =     num(struct.orderNumber)
+			@rate =   num(struct.rate)
+			@amount = num(struct.amount)
+			@type =   struct.type
+		end
 	end
+
 end

@@ -1,7 +1,6 @@
-require 'ostruct'
-require_relative 'Abstract'
+require_relative '_'
 
-class Glass < Abstract
+class Model::Glass < Model::Abstract
 
 	def get
 		raw = OpenStruct.new(@stock.glass)
@@ -17,24 +16,32 @@ class Glass < Abstract
 		GlassContainer.new(asks, bids)
 	end
 
-end
+	class GlassContainer
+		attr_reader :asks, :bids
 
-class GlassContainer
-	attr_reader :asks, :bids
+		def initialize(asks, bids)
+			@asks = asks
+			@bids = bids
+		end
 
-	def initialize(asks, bids)
-		@asks = asks
-		@bids = bids
+		def top_ask_rate
+			@asks.first.rate
+		end
+
+		def top_bid_rate
+			@bids.first.rate
+		end
+
 	end
 
-end
+	class GlassOrder < Model::AbstractAccessor
+		attr_reader :rate, :amount
 
-class GlassOrder < AbstractAccessor
-	attr_reader :rate, :amount
+		def initialize(raw_order)
+			@rate =   num(raw_order[0])
+			@amount = num(raw_order[1])
+		end
 
-	def initialize(raw_order)
-		@rate =   num(raw_order[0])
-		@amount = num(raw_order[1])
 	end
 
 end

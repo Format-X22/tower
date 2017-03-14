@@ -1,23 +1,16 @@
-require 'big_decimal'
-require_relative '../Abstract'
-require_relative '../../model/Candles'
-require_relative '../../model/Glass'
-require_relative '../../model/Profile'
-require_relative '../../model/Meta'
-require_relative '../../model/Order'
-require_relative '../../model/Money'
-require_relative '../../model/Trader'
+require_relative '_'
 
-class Executor < Abstract
+class Algorithm::Pair::Executor < Algorithm::Abstract
 
 	def initialize(context)
-		@candles = Candles.new(context)
-		@glass = Glass.new(context)
-		@profile = Profile.new(context)
-		@meta = Meta.new(context)
-		@order = Order.new(context)
-		@money = Money.new(context)
-		@trader = Trader.new(context)
+		super()
+		@candles = Model::Candles.new(context)
+		@glass   = Model::Glass.new(context)
+		@profile = Model::Profile.new(context)
+		@meta    = Model::Meta.new(context)
+		@order   = Model::Order.new(context)
+		@money   = Model::Money.new(context)
+		@trader  = Model::Trader.new(context)
 	end
 
 	def tick
@@ -48,10 +41,6 @@ class Executor < Abstract
 
 	def money
 		@money.get
-	end
-
-	def stop_trade
-		@trader.stop_trade
 	end
 
 	def buy_order(rate, amount)

@@ -1,9 +1,9 @@
-require_relative '../model/Utils'
+require_relative '_'
 
-class Abstract
+class Algorithm::Abstract
 
 	def initialize
-		@utils = Utils.new
+		@utils = Model::Utils.new
 	end
 
 	def now

@@ -1,7 +1,7 @@
-require_relative 'Utils'
+require_relative '_'
 
-class Abstract
-	include Utils
+class Model::Abstract
+	include Model::Utils
 
 	attr_reader :db, :stock
 
@@ -11,6 +11,6 @@ class Abstract
 	end
 end
 
-class AbstractAccessor
-	include Utils
+class Model::AbstractAccessor
+	include Model::Utils
 end
