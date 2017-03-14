@@ -8,8 +8,8 @@ class Algorithm < Implementer
 		end
 
 		if delisted_in_bag?
-			stop_delisted
 			sell_delisted
+			stop_delisted
 			return false
 		end
 
@@ -20,7 +20,7 @@ class Algorithm < Implementer
 		end
 
 		if harvesting?
-			ratably_sell_harvesting_part
+			rateably_sell_harvesting_part
 			stop_harvesting
 			return false
 		end
