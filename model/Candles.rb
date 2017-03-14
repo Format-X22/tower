@@ -1,9 +1,19 @@
+require 'ostruct'
 require_relative 'Abstract'
 
 class Candles < Abstract
 
 	def sync
-		#
+		last_timestamp = @db.candles.last.date
+		candles = @stock.candles(last_timestamp - 300)
+
+		if candles.length == 1
+			@db.update_last_candle(candles.first)
+		end
+
+		if candles.length > 1
+			@db.add_candles(candles)
+		end
 	end
 
 	def last_candle
@@ -37,6 +47,16 @@ class Candles < Abstract
 		else
 			last_candle
 		end
+	end
+
+end
+
+class Candle < AbstractAccessor
+
+	def initialize(raw)
+		struct = OpenStruct.new(raw)
+
+		#
 	end
 
 end
