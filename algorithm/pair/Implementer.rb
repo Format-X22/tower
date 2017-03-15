@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Algorithm::Pair::Implementer < Algorithm::Pair::Executor
+class Algorithm_Pair_Implementer < Algorithm_Pair_Executor
 
 	def state(state = nil)
 		unless state

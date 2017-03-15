@@ -1,18 +1,18 @@
 require_relative '_'
 
-class Model::Meta < Model::Abstract
+class Model_Meta < Model_Abstract
 
 	def get
 		MetaAccessor.new(@db)
 	end
 
-	class MetaAccessor < Model::AbstractAccessor
+	class MetaAccessor < Model_AbstractAccessor
 		attr_reader :state, :sell_start_time, :calm, :calm_offset, :extra_btc, :low
 
 		def initialize(db)
 			@db = db
 
-			raw = Util::HashStruct.new(@db.meta)
+			raw = Util_HashStruct.new(@db.meta)
 
 			@state           = raw.state
 			@sell_start_time = parse_date(raw.sell_start_time)

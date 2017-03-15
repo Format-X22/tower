@@ -1,7 +1,7 @@
 require_relative '_'
 
-class Model::Abstract
-	include Util::Misc
+class Model_Abstract
+	include Util_Misc
 
 	attr_reader :db, :stock
 
@@ -11,6 +11,6 @@ class Model::Abstract
 	end
 end
 
-class Model::AbstractAccessor
-	include Util::Misc
+class Model_AbstractAccessor
+	include Util_Misc
 end

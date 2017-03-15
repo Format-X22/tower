@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Money < Model::Abstract
+class Model_Money < Model_Abstract
 
 	def get
 		num(@stock.money)

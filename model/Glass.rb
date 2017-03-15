@@ -1,9 +1,9 @@
 require_relative '_'
 
-class Model::Glass < Model::Abstract
+class Model_Glass < Model_Abstract
 
 	def get
-		raw = Util::HashStruct.new(@stock.glass)
+		raw = Util_HashStruct.new(@stock.glass)
 
 		asks = raw.asks.map do |order|
 			GlassOrder.new(order)
@@ -34,7 +34,7 @@ class Model::Glass < Model::Abstract
 
 	end
 
-	class GlassOrder < Model::AbstractAccessor
+	class GlassOrder < Model_AbstractAccessor
 		attr_reader :rate, :amount
 
 		def initialize(raw_order)

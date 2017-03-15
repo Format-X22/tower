@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Util::HashStruct
+class Util_HashStruct
 
 	def self.getter(name, &body)
 		define_method(name, &body)

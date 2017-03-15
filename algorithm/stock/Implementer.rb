@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Algorithm::Stock::Implementer < Algorithm::Stock::Executor
+class Algorithm_Stock_Implementer < Algorithm_Stock_Executor
 
 	def stop?
 		profile.stop

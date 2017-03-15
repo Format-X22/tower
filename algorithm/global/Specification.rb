@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Algorithm::Global::Specification < Algorithm::Global::Implementer
+class Algorithm_Global_Specification < Algorithm_Global_Implementer
 
 	def trade
 		if stop?

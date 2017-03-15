@@ -1,18 +1,18 @@
 require_relative '_'
 
-class Algorithm::Global::Executor < Algorithm::Abstract
+class Algorithm_Global_Executor < Algorithm_Abstract
 	attr_reader :context
 
 	def initialize(db_name, stocks_keys)
 		super()
 
-		connection = DataBase::Connection.new(db_name)
-		database   = DataBase::Driver.new(connection)
+		connection = DataBase_Connection.new(db_name)
+		database   = DataBase_Driver.new(connection)
 
-		@context = Model::Context.new(database)
-		@config  = Model::Config.new(@context, stocks_keys)
-		@logger  = Model::Logger.new(@context)
-		@pairs   = Model::Pairs.new(@context)
+		@context = Model_Context.new(database)
+		@config  = Model_Config.new(@context, stocks_keys)
+		@logger  = Model_Logger.new(@context)
+		@pairs   = Model_Pairs.new(@context)
 	end
 
 	def config

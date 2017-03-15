@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Algorithm::Global::Implementer < Algorithm::Global::Executor
+class Algorithm_Global_Implementer < Algorithm_Global_Executor
 
 	def stop?
 		config.stop

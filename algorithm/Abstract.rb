@@ -1,9 +1,9 @@
 require_relative '_'
 
-class Algorithm::Abstract
+class Algorithm_Abstract
 
 	def initialize
-		@utils = Util::Misc.new
+		@utils = Util_Misc.new
 	end
 
 	def now

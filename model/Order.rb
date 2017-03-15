@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Order < Model::Abstract
+class Model_Order < Model_Abstract
 
 	def get
 		@stock.orders.map do |order|
@@ -8,11 +8,11 @@ class Model::Order < Model::Abstract
 		end
 	end
 
-	class OrderAccessor < Model::AbstractAccessor
+	class OrderAccessor < Model_AbstractAccessor
 		attr_reader :id, :rate, :amount, :type
 
 		def initialize(raw)
-			struct = Util::HashStruct.new(raw)
+			struct = Util_HashStruct.new(raw)
 
 			@id     = num(struct.orderNumber)
 			@rate   = num(struct.rate)

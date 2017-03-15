@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Candles < Model::Abstract
+class Model_Candles < Model_Abstract
 
 	def sync
 		last_timestamp = @db.candles.last.date
@@ -48,10 +48,10 @@ class Model::Candles < Model::Abstract
 		end
 	end
 
-	class Candle < Model::AbstractAccessor
+	class Candle < Model_AbstractAccessor
 
 		def initialize(raw)
-			struct = Util::HashStruct.new(raw)
+			struct = Util_HashStruct.new(raw)
 
 			#
 		end

@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Algorithm::Stock::Specification < Algorithm::Stock::Implementer
+class Algorithm_Stock_Specification < Algorithm_Stock_Implementer
 
 	def trade
 		if stop? or wait?

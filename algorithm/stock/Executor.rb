@@ -1,16 +1,16 @@
 require_relative '_'
 
-class Algorithm::Stock::Executor < Algorithm::Abstract
+class Algorithm_Stock_Executor < Algorithm_Abstract
 
 	def initialize(context)
 		super()
 		@context = context
-		@profile = Model::Profile.new(context)
-		@pairs   = Model::Pairs.new(context)
-		@trader  = Model::Trader.new(context)
-		@twitter = Model::Twitter.new(context)
-		@glass   = Model::Glass.new(context)
-		@money   = Model::Money.new(context)
+		@profile = Model_Profile.new(context)
+		@pairs   = Model_Pairs.new(context)
+		@trader  = Model_Trader.new(context)
+		@twitter = Model_Twitter.new(context)
+		@glass   = Model_Glass.new(context)
+		@money   = Model_Money.new(context)
 	end
 
 	def profile

@@ -1,4 +1,2 @@
-module Util
-	require_relative '../_'
-	require_relative 'Misc'
-end
+require_relative '../_'
+require_relative 'Misc'

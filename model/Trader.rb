@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Trader < Model::Abstract
+class Model_Trader < Model_Abstract
 
 	def stop_trade
 		@db.stop_trade

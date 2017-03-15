@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Logger < Model::Abstract
+class Model_Logger < Model_Abstract
 
 	def log(message, prefix = nil)
 		log_universal(

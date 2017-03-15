@@ -1,6 +1,6 @@
 require_relative '_'
 
-class DataBase::Driver
+class DataBase_Driver
 
 	def initialize(connection:, profile: nil, stock: nil, pair: nil)
 		@connection = connection

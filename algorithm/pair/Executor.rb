@@ -1,16 +1,16 @@
 require_relative '_'
 
-class Algorithm::Pair::Executor < Algorithm::Abstract
+class Algorithm_Pair_Executor < Algorithm_Abstract
 
 	def initialize(context)
 		super()
-		@candles = Model::Candles.new(context)
-		@glass   = Model::Glass.new(context)
-		@profile = Model::Profile.new(context)
-		@meta    = Model::Meta.new(context)
-		@order   = Model::Order.new(context)
-		@money   = Model::Money.new(context)
-		@trader  = Model::Trader.new(context)
+		@candles = Model_Candles.new(context)
+		@glass   = Model_Glass.new(context)
+		@profile = Model_Profile.new(context)
+		@meta    = Model_Meta.new(context)
+		@order   = Model_Order.new(context)
+		@money   = Model_Money.new(context)
+		@trader  = Model_Trader.new(context)
 	end
 
 	def tick

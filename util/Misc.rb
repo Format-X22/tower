@@ -1,6 +1,6 @@
 require_relative '_'
 
-module Util::Misc
+module Util_Misc
 
 	def num(number)
 		BigDecimal.new(number.to_s)

@@ -1,12 +1,12 @@
 require_relative '_'
 
-class Model::Profile < Model::Abstract
+class Model_Profile < Model_Abstract
 
 	def get
 		ProfileAccessor.new(@db)
 	end
 
-	class ProfileAccessor < Model::AbstractAccessor
+	class ProfileAccessor < Model_AbstractAccessor
 		attr_reader(
 			:low_reset_time,
 			:stop,
@@ -21,7 +21,7 @@ class Model::Profile < Model::Abstract
 		def initialize(db)
 			@db = db
 
-			struct = Util::HashStruct.new(@db.profile)
+			struct = Util_HashStruct.new(@db.profile)
 
 			@low_reset_time       = parse_date(struct.low_reset_time)
 			@stop                 = struct.stop

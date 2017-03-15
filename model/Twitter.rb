@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Twitter
+class Model_Twitter
 
 	def news
 		#

@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Config < Model::Abstract
+class Model_Config < Model_Abstract
 
 	def initialize(context, stock_keys)
 		super(context)
@@ -9,7 +9,7 @@ class Model::Config < Model::Abstract
 	end
 
 	def get
-		struct = Util::HashStruct.new(@db.config)
+		struct = Util_HashStruct.new(@db.config)
 
 		#
 	end
