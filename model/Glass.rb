@@ -3,7 +3,7 @@ require_relative '_'
 class Model::Glass < Model::Abstract
 
 	def get
-		raw = OpenStruct.new(@stock.glass)
+		raw = Util::HashStruct.new(@stock.glass)
 
 		asks = raw.asks.map do |order|
 			GlassOrder.new(order)

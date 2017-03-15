@@ -51,7 +51,7 @@ class Model::Candles < Model::Abstract
 	class Candle < Model::AbstractAccessor
 
 		def initialize(raw)
-			struct = OpenStruct.new(raw)
+			struct = Util::HashStruct.new(raw)
 
 			#
 		end

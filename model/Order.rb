@@ -12,7 +12,7 @@ class Model::Order < Model::Abstract
 		attr_reader :id, :rate, :amount, :type
 
 		def initialize(raw)
-			struct = OpenStruct.new(raw)
+			struct = Util::HashStruct.new(raw)
 
 			@id     = num(struct.orderNumber)
 			@rate   = num(struct.rate)

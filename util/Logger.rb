@@ -1,5 +1,5 @@
-require_relative '../db/Abstract'
-require_relative './Format'
+# TODO Re
+require_relative '_'
 
 class Logger < Abstract
 

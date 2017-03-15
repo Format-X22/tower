@@ -12,7 +12,7 @@ class Model::Meta < Model::Abstract
 		def initialize(db)
 			@db = db
 
-			raw = OpenStruct.new(@db.meta)
+			raw = Util::HashStruct.new(@db.meta)
 
 			@state           = raw.state
 			@sell_start_time = parse_date(raw.sell_start_time)

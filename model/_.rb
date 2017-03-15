@@ -11,5 +11,4 @@ module Model
 	require_relative 'Profile'
 	require_relative 'Trader'
 	require_relative 'Twitter'
-	require_relative 'Utils'
 end

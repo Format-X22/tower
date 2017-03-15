@@ -21,7 +21,7 @@ class Model::Profile < Model::Abstract
 		def initialize(db)
 			@db = db
 
-			struct = OpenStruct.new(@db.profile)
+			struct = Util::HashStruct.new(@db.profile)
 
 			@low_reset_time       = parse_date(struct.low_reset_time)
 			@stop                 = struct.stop
