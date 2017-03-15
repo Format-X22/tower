@@ -1,6 +1,6 @@
-require 'pg'
+require_relative '../_'
 
-class Connection
+class DataBase::Connection
 
 	def initialize(db_name)
 		@connection = PG.connect(:dbname => db_name)
