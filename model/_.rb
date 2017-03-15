@@ -2,6 +2,7 @@ module Model
 	require_relative '../_'
 	require_relative 'Abstract'
 	require_relative 'Candles'
+	require_relative 'Config'
 	require_relative 'Context'
 	require_relative 'Glass'
 	require_relative 'Meta'
@@ -11,4 +12,5 @@ module Model
 	require_relative 'Profile'
 	require_relative 'Trader'
 	require_relative 'Twitter'
+	require_relative 'Logger'
 end

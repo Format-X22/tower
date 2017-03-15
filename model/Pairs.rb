@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model::Pairs
+class Model::Pairs < Model::Abstract
 
 	def all
 		#

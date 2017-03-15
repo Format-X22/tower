@@ -1,7 +1,6 @@
-# TODO Re
 require_relative '_'
 
-class Logger < Abstract
+class Model::Logger < Model::Abstract
 
 	def log(message, prefix = nil)
 		log_universal(
@@ -31,7 +30,7 @@ class Logger < Abstract
 	end
 
 	def log_trade(pair, type, btc)
-		btc = Format.readable_num(btc)
+		btc = readable_num(btc)
 		message = "#{pair} - #{btc}"
 
 		log_universal(
@@ -52,18 +51,18 @@ class Logger < Abstract
 
 		params.push(text_object[:database]) if push_text
 
-		exec(query, params)
+		@db.exec(query, params)
 	end
 
 	def make_text(message, prefix)
 		if message.is_a? Exception
 			error = message
-			text = make_text_with_prefix(error.message, prefix)
+			text = text_with_prefix(error.message, prefix)
 			database = "#{text} --- #{error.backtrace.inspect}"
-			console = make_text_with_date(text)
+			console = text_with_date(text)
 		else
-			database = make_text_with_prefix(message, prefix)
-			console = make_text_with_date(database)
+			database = text_with_prefix(message, prefix)
+			console = text_with_date(database)
 		end
 
 		{
@@ -72,11 +71,12 @@ class Logger < Abstract
 		}
 	end
 
-	def make_text_with_date(text)
+	def text_with_date(text)
 		"#{Time.now} >>> #{text}"
 	end
 
-	def make_text_with_prefix(text, prefix)
+	def text_with_prefix(text, prefix)
 		"[#{prefix or 'Void'}] #{text}"
 	end
+
 end
