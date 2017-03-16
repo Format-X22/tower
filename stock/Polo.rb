@@ -1,31 +1,31 @@
+require_relative '_'
 require 'date'
 require 'uri'
 require 'openssl'
 require 'net/http'
 require 'json'
 
-require_relative '../util/Format'
-
 class Polo
+	attr_writer :pair
 
-	def initialize(pair)
+	def initialize(key, secret, pair = nil)
+		@key = key
+		@secret = secret
 		@pair = pair
 	end
 
-	def candles(from, to, pair = @pair)
-		to = 9999999999 unless to
-
-		if pair == 'USDT'
-			currency_pair = 'USDT_BTC'
+	def candles(from, to = 9999999999)
+		if @pair == 'USDT'
+			currency_pair = usdt_pair
 		else
-			currency_pair = "BTC_#{pair}"
+			currency_pair = btc_pair
 		end
 
 		public_api_call(
 			command: 'returnChartData',
 			currencyPair: currency_pair,
-			start: Format.date_to_i(from),
-			end: Format.date_to_i(to),
+			start: date_to_i(from),
+			end: date_to_i(to),
 			period: 300
 		)
 	end
@@ -33,7 +33,7 @@ class Polo
 	def glass(depth = 100)
 		public_api_call(
 			command: 'returnOrderBook',
-			currencyPair: "BTC_#{@pair}",
+			currencyPair: btc_pair,
 			depth: depth
 		)
 	end
@@ -54,8 +54,8 @@ class Polo
 	def history(from)
 		private_api_call(
 			command: 'returnTradeHistory',
-			currencyPair: "BTC_#{@pair}",
-			start: Format.date_to_i(from),
+			currencyPair: btc_pair,
+			start: date_to_i(from),
 		)
 	end
 
@@ -71,8 +71,8 @@ class Polo
 		private_api_call(
 			command: 'moveOrder',
 			orderNumber: id,
-			rate: Format.readable_num(rate),
-			amount: Format.readable_num(amount)
+			rate: readable_num(rate),
+			amount: readable_num(amount)
 		)
 	end
 
@@ -81,18 +81,23 @@ class Polo
 	def trade(type, rate, amount)
 		private_api_call(
 			command: type,
-			currencyPair: "BTC_#{@pair}",
-			rate: Format.readable_num(rate),
-			amount: Format.readable_num(amount)
+			currencyPair: btc_pair,
+			rate: readable_num(rate),
+			amount: readable_num(amount)
 		)
 	end
 
 	def public_api_call(config)
 		params = URI.encode_www_form(config)
-		response = Net::HTTP.get(URI("https://poloniex.com/public?#{params}"))
+		uri = URI("https://poloniex.com/public?#{params}")
+		response = Net::HTTP.get(uri)
 		result = JSON.parse(response)
 
-		if result.is_a?(Hash) and result['error']
+		unless result.is_a?(Hash)
+			raise 'Public api call result is not a hash'
+		end
+
+		if result['error']
 			raise "#{result['error']} - #{config}"
 		end
 
@@ -112,7 +117,11 @@ class Polo
 			result = JSON.parse(http.request(request).body)
 		end
 
-		if result.is_a?(Hash) and result['error']
+		unless result.is_a?(Hash)
+			raise 'Private api call result is not a hash'
+		end
+
+		if result['error']
 			raise "#{result['error']} - #{config}"
 		end
 
@@ -121,14 +130,22 @@ class Polo
 
 	def request_headers(body)
 		params = URI.encode_www_form(body)
-
 		digest = OpenSSL::Digest.new('sha512')
+		sign   = OpenSSL::HMAC.hexdigest(digest, @secret, params)
 
 		{
-			'Key' => @key,
-			'Sign' => OpenSSL::HMAC.hexdigest(digest, @secret, params),
-			'Content-Type' => 'application/json'
+			'Key': @key,
+			'Sign': sign,
+			'Content-Type': 'application/json'
 		}
+	end
+
+	def btc_pair
+		"BTC_#{@pair}"
+	end
+
+	def usdt_pair
+		'USDT_BTC'
 	end
 
 end
