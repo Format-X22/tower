@@ -16,44 +16,6 @@ class DataBase_Driver
 
 	protected
 
-	def make_params(values)
-		data = []
-
-		values.each do |key, value|
-			data.push("#{key}='#{value}'") if value
-		end
-
-		if data.length == 0
-			nil
-		else
-			data.join(', ')
-		end
-	end
-
-	def get_single(query, params = [])
-		result = nil
-
-		exec(query, params).each do |row|
-			result = row
-		end
-
-		result
-	end
-
-	def get_many(query, params = [])
-		result = []
-
-		exec(query, params).values.each do |row|
-			result.push(row[0])
-		end
-
-		result
-	end
-
-	def exec(query, params = [])
-		@connection.exec(query, params)
-	end
-
 	def meta
 		get_single('SELECT * FROM meta WHERE stock=$1 AND profile=$2 AND pair=$3', @pair_context)
 	end
@@ -79,17 +41,61 @@ class DataBase_Driver
 	def profile
 		result = get_single('SELECT * FROM profile WHERE stock=$1 AND profile=$2', @profile_context)
 
-		if result['stop'] == 't'
-			result['stop'] = true
-		else
-			result['stop'] = false
-		end
+		to_boolean(result, 'stop')
 
 		result
 	end
 
 	def all_pairs
 		get_many('SELECT pair FROM pairs WHERE stock=$1 AND profile=$2 AND trade = TRUE', @profile_context)
+	end
+
+	private
+
+	def get_single(query, params = [])
+		result = nil
+
+		exec(query, params).each do |row|
+			result = row
+		end
+
+		result
+	end
+
+	def get_many(query, params = [])
+		result = []
+
+		exec(query, params).each do |row|
+			result.push(row)
+		end
+
+		result
+	end
+
+	def exec(query, params = [])
+		@connection.exec(query, params)
+	end
+
+	def to_boolean(hash, key)
+		if hash[key] == 't'
+			hash[key] = true
+		else
+			hash[key] = false
+		end
+	end
+
+	def make_params(values)
+		data = []
+
+		values.each do |key, value|
+			data.push("#{key}='#{value}'") if value
+		end
+
+		if data.length == 0
+			nil
+		else
+			data.join(', ')
+		end
 	end
 
 end

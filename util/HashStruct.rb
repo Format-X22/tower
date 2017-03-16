@@ -13,7 +13,7 @@ class Util_HashStruct
 	def initialize(hash)
 		@mem = {}
 
-		hash.each_pair do |key, value|
+		hash.each do |key, value|
 			@mem[key] = value
 
 			self.class.getter(key) do
