@@ -2,30 +2,30 @@ require_relative '_'
 
 class Algorithm_Stock_Specification < Algorithm_Stock_Implementer
 
-	def trade
+	def run(&chain)
 		if stop? or wait?
-			return false
+			return
 		end
 
 		if delisted_in_bag?
 			sell_delisted
 			stop_delisted
-			return false
+			return
 		end
 
 		if listed_recently?
 			sell_all_traded
 			wait_listed_hype_end
-			return false
+			return
 		end
 
 		if harvesting?
 			rateably_sell_harvesting_part
 			stop_harvesting
-			return false
+			return
 		end
 
-		true
+		chain.call
 	end
 
 end

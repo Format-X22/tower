@@ -2,7 +2,7 @@ require_relative '_'
 
 class Algorithm_Pair_Specification < Algorithm_Pair_Implementer
 
-	def trade
+	def run
 		if stop? or wait?
 			return
 		end

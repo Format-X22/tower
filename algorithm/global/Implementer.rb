@@ -13,9 +13,11 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 		end
 	end
 
-	def stock_trade
+	def stock_trade(&block)
 		safe_call do
-			#
+			Algorithm_Stock_Specification
+				.new(context)
+				.run &block
 		end
 	end
 
@@ -28,7 +30,9 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 
 	def pair_trade
 		safe_call do
-			#
+			Algorithm_Pair_Specification
+				.new(context)
+				.run
 		end
 	end
 
