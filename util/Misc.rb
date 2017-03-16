@@ -1,4 +1,5 @@
 require_relative '_'
+require 'bigdecimal'
 
 module Util_Misc
 

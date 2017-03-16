@@ -1,6 +1,4 @@
 require 'date'
-require 'bigdecimal'
-require 'pg'
 
 require_relative 'util/_'
 require_relative 'database/_'
