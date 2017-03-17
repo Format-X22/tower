@@ -8,9 +8,11 @@ class Algorithm_Global_Specification < Algorithm_Global_Implementer
 		end
 
 		each_stock do
-			stock_trade do
-				each_pair do
-					pair_trade
+			each_profile do
+				stock_trade do
+					each_pair do
+						pair_trade
+					end
 				end
 			end
 		end

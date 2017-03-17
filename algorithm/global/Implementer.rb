@@ -7,9 +7,11 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 	end
 
 	def each_stock(&block)
-		config.stocks.each do |stock|
-			context.stock = stock
-			block.call
+		safe_call do
+			config.stocks.each do |stock|
+				context.stock = stock
+				block.call
+			end
 		end
 	end
 
@@ -18,6 +20,13 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 			Algorithm_Stock_Specification
 				.new(context)
 				.run &block
+		end
+	end
+
+	def each_profile(&block)
+		config.profiles.each do |profile|
+			context.profile = profile
+			block.call
 		end
 	end
 

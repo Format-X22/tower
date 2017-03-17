@@ -13,4 +13,8 @@ class Model_Context
 		@stock.pair = value
 	end
 
+	def profile=(value)
+		@db.profile = value
+	end
+
 end
