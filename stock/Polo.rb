@@ -6,9 +6,12 @@ require 'net/http'
 require 'json'
 
 class Polo
+	attr_reader :twitter_name
 	attr_writer :pair
 
 	def initialize(key, secret, pair = nil)
+		@twitter_name = 'poloniex'
+
 		@key = key
 		@secret = secret
 		@pair = pair

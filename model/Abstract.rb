@@ -8,6 +8,7 @@ class Model_Abstract
 	def initialize(context)
 		@db = context.db
 		@stock = context.stock
+		@keys = context.keys
 	end
 end
 

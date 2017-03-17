@@ -3,14 +3,14 @@ require_relative '_'
 class Algorithm_Global_Executor < Algorithm_Abstract
 	attr_reader :context
 
-	def initialize(db_name, stocks_keys)
+	def initialize(keys, db_name)
 		super()
 
 		connection = DataBase_Connection.new(db_name)
 		database   = DataBase_Driver.new(connection)
 
-		@context = Model_Context.new(database)
-		@config  = Model_Config.new(@context, stocks_keys)
+		@context = Model_Context.new(keys, database)
+		@config  = Model_Config.new(@context)
 		@logger  = Model_Logger.new(@context)
 		@pairs   = Model_Pairs.new(@context)
 	end

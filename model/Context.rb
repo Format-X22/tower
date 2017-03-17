@@ -1,9 +1,10 @@
 require_relative '_'
 
 class Model_Context
-	attr_accessor :db, :stock
+	attr_accessor :keys, :db, :stock
 
-	def initialize(db = nil, stock = nil)
+	def initialize(keys = nil, db = nil, stock = nil)
+		@keys = keys
 		@db = db
 		@stock = stock
 	end

@@ -2,7 +2,7 @@ require_relative '_'
 
 class Model_Config < Model_Abstract
 
-	def initialize(context, stock_keys)
+	def initialize(context)
 		super(context)
 
 		#
