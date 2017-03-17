@@ -94,7 +94,7 @@ class Algorithm_Pair_Implementer < Algorithm_Pair_Executor
 		result = 0
 
 		history(from).sell.each do |event|
-			result += event.total * (1 - event.fee) # TODO Model
+			result += event.total * (num(1) - event.fee)
 		end
 
 		result

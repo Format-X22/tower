@@ -11,6 +11,7 @@ class Algorithm_Pair_Executor < Algorithm_Abstract
 		@order   = Model_Order.new(context)
 		@money   = Model_Money.new(context)
 		@trader  = Model_Trader.new(context)
+		@history = Model_History.new(context)
 	end
 
 	def tick
@@ -55,8 +56,8 @@ class Algorithm_Pair_Executor < Algorithm_Abstract
 		@trader.replace(id, rate, amount)
 	end
 
-	def history(from) # TODO Model
-		# TODO
+	def history(from)
+		@history.from(from)
 	end
 
 end
