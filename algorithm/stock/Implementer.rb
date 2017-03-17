@@ -42,7 +42,7 @@ class Algorithm_Stock_Implementer < Algorithm_Stock_Executor
 		pairs.sync_listed(extract_listed)
 
 		pairs.listed.each do |pair|
-			add_time = pair.add_time
+			add_time = pair.add_time # TODO Model
 			offset = profile.listed_actual_offset
 
 			if add_time + offset > now

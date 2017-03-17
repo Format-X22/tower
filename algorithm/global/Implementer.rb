@@ -8,7 +8,7 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 
 	def each_stock(&block)
 		safe_call do
-			config.stocks.each do |stock|
+			config.stocks.each do |stock| # TODO Model
 				context.stock = stock
 				block.call
 			end
@@ -24,7 +24,7 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 	end
 
 	def each_profile(&block)
-		config.profiles.each do |profile|
+		config.profiles.each do |profile| # TODO Model
 			context.profile = profile
 			block.call
 		end
@@ -60,7 +60,7 @@ class Algorithm_Global_Implementer < Algorithm_Global_Executor
 				exit
 			end
 
-			sleep config.rescue_sleep
+			sleep config.rescue_sleep # TODO Model
 		end
 	end
 

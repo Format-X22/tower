@@ -55,4 +55,8 @@ class Algorithm_Pair_Executor < Algorithm_Abstract
 		@trader.replace(id, rate, amount)
 	end
 
+	def history(from) # TODO Model
+		# TODO
+	end
+
 end

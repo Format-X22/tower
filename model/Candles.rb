@@ -1,3 +1,4 @@
+# TODO Model
 require_relative '_'
 
 class Model_Candles < Model_Abstract
@@ -30,10 +31,10 @@ class Model_Candles < Model_Abstract
 		from(from).each do |candle|
 			unless low_candle
 				low_candle = candle
-				low_ratio = low_candle.low / candle.usdt.average
+				low_ratio = low_candle.low / candle.usdt.average # TODO Model
 			end
 
-			ratio = candle.low / candle.usdt.average
+			ratio = candle.low / candle.usdt.average # TODO Model
 
 			if low_ratio > ratio
 				low_candle = candle
