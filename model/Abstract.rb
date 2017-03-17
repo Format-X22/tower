@@ -11,7 +11,3 @@ class Model_Abstract
 		@keys = context.keys
 	end
 end
-
-class Model_AbstractAccessor
-	include Util_Misc
-end

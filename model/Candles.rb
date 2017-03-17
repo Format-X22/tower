@@ -49,7 +49,8 @@ class Model_Candles < Model_Abstract
 		end
 	end
 
-	class Candle < Model_AbstractAccessor
+	class Candle
+		include Util_Misc
 
 		def initialize(raw)
 			struct = Util_HashStruct.new(raw)

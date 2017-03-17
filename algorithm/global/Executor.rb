@@ -16,7 +16,7 @@ class Algorithm_Global_Executor < Algorithm_Abstract
 	end
 
 	def config
-		@config.get
+		@config
 	end
 
 	def pairs

@@ -1,14 +1,19 @@
 require_relative '_'
 
 class Model_Order < Model_Abstract
+	attr_reader :list
 
-	def get
-		@stock.orders.map do |order|
-			OrderAccessor.new(order)
+	def initialize(context)
+		super
+
+		@list = @stock.orders.map do |order|
+			Order.new(order)
 		end
 	end
 
-	class OrderAccessor < Model_AbstractAccessor
+	class Order
+		include Util_Misc
+
 		attr_reader :id, :rate, :amount, :type
 
 		def initialize(raw)

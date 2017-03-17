@@ -14,7 +14,7 @@ class Algorithm_Stock_Executor < Algorithm_Abstract
 	end
 
 	def profile
-		@profile.get
+		@profile
 	end
 
 	def pairs
@@ -24,12 +24,12 @@ class Algorithm_Stock_Executor < Algorithm_Abstract
 	def sell_order(pair, btc = nil)
 		@context.pair = pair
 
-		rate = @glass.get.top_bid_rate
+		rate = @glass.top_bid_rate
 
 		if btc
 			@trader.sell(rate, btc / rate)
 		else
-			@trader.sell(rate, @money.get)
+			@trader.sell(rate, @money.money)
 		end
 	end
 

@@ -24,23 +24,23 @@ class Algorithm_Pair_Executor < Algorithm_Abstract
 	end
 
 	def glass
-		@glass.get
+		@glass
 	end
 
 	def profile
-		@profile.get
+		@profile
 	end
 
 	def meta
-		@meta.get
+		@meta
 	end
 
 	def order
-		@order.get.first
+		@order.list.first
 	end
 
 	def money
-		@money.get
+		@money.money
 	end
 
 	def buy_order(rate, amount)
