@@ -5,11 +5,12 @@ require 'openssl'
 require 'net/http'
 require 'json'
 
-class Polo
-	attr_reader :twitter_name
+class Stock_Polo
+	attr_reader :name, :twitter_name
 	attr_writer :pair
 
 	def initialize(key, secret, pair = nil)
+		@name = 'poloniex'
 		@twitter_name = 'poloniex'
 
 		@key = key
