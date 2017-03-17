@@ -9,9 +9,9 @@ class Algorithm_Global_Executor < Algorithm_Abstract
 		connection = DataBase_Connection.new(db_name)
 		database   = DataBase_Driver.new(connection)
 
-		@context = Model_Context.new(keys, database)
+		@context = Util_Context.new(keys, database)
+
 		@config  = Model_Config.new(@context)
-		@logger  = Model_Logger.new(@context)
 		@pairs   = Model_Pairs.new(@context)
 	end
 
@@ -24,11 +24,11 @@ class Algorithm_Global_Executor < Algorithm_Abstract
 	end
 
 	def log(message)
-		@logger.log(message)
+		@config.log(message)
 	end
 
 	def log_error(error)
-		@logger.log_error(error)
+		@config.log_error(error)
 	end
 
 end

@@ -9,13 +9,13 @@ class Model_Trader < Model_Abstract
 	def buy(rate, amount)
 		@stock.buy(rate, amount)
 
-		@db.log_trade('BUY', rate * amount)
+		log_trade('BUY', rate * amount)
 	end
 
 	def sell(rate, amount)
 		@stock.sell(rate, amount)
 
-		@db.log_trade('SELL', rate * amount)
+		log_trade('SELL', rate * amount)
 	end
 
 	def replace(id, rate, amount)

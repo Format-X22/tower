@@ -1,6 +1,6 @@
 require_relative '_'
 
-class Model_Context
+class Util_Context
 	attr_accessor :keys, :db, :stock
 
 	def initialize(keys = nil, db = nil, stock = nil)
