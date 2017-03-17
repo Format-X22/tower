@@ -19,23 +19,33 @@ class Model_Pairs < Model_Abstract
 	end
 
 	def usdt
-		#
+		Model_Candles.new(@context).usdt
 	end
 
 	def sync_listed(pairs)
-		#
+		@db.add_pairs(pairs, listed: true)
 	end
 
 	def sync_delisted(pairs)
-		#
+		@db.add_pairs(pairs, delisted: true)
 	end
 
-	def set_min_calm(pair, calm)
-		#
+	def set_min_calm(pair, min_calm)
+		@context.pair = pair
+
+		meta = Model_Meta.new(@context)
+
+		if meta.calm < min_calm
+			meta.calm = min_calm
+		end
 	end
 
 	def decrement_btc(pair, btc)
-		#
+		@context.pair = pair
+
+		meta = Model_Meta.new(@context)
+
+		meta.extra_btc = meta.extra_btc - btc
 	end
 
 	private

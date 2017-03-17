@@ -49,6 +49,10 @@ class Model_Candles < Model_Abstract
 		end
 	end
 
+	def usdt
+		#
+	end
+
 	class Candle
 		include Util_Misc
 

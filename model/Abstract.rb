@@ -3,9 +3,10 @@ require_relative '_'
 class Model_Abstract
 	include Util_Misc
 
-	attr_reader :db, :stock
+	attr_reader :context, :db, :stock
 
 	def initialize(context)
+		@context = context
 		@db = context.db
 		@stock = context.stock
 		@keys = context.keys
