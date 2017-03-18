@@ -18,8 +18,8 @@ class Model_Pairs < Model_Abstract
 		parse @db.pairs(delisted: true)
 	end
 
-	def usdt
-		Model_Candles.new(@context).usdt
+	def usd
+		Model_Candles.new(@context).usd
 	end
 
 	def sync_listed(pairs)

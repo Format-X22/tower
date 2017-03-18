@@ -73,7 +73,7 @@ class Algorithm_Stock_Implementer < Algorithm_Stock_Executor
 	def rateably_sell_harvesting_part
 		traded = pairs.traded
 		usd = profile.harvesting_usd
-		btc = usd / pairs.usdt.rate / traded.length
+		btc = usd / pairs.usd.rate / traded.length
 
 		traded.each do |pair|
 			pairs.decrement_btc(pair, btc)

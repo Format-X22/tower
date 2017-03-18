@@ -7,11 +7,23 @@ class Util_Context
 		@keys = keys
 		@db = db
 		@stock = stock
+
+		@swapped_pair = nil
 	end
 
 	def pair=(value)
 		@db.pair = value
 		@stock.pair = value
+	end
+
+	def swap_pair(pair = nil)
+		if @swapped_pair
+			self.pair = @swapped_pair
+			@swapped_pair = nil
+		else
+			self.pair = pair
+			@swapped_pair = pair
+		end
 	end
 
 	def profile=(value)

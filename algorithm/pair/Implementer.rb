@@ -101,7 +101,7 @@ class Algorithm_Pair_Implementer < Algorithm_Pair_Executor
 	end
 
 	def btc_sigma
-		low_tick.usdt.low / tick.usdt.low
+		low_tick.usd.low / tick.usd.low
 	end
 
 end

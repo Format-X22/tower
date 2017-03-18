@@ -6,12 +6,13 @@ require 'net/http'
 require 'json'
 
 class Stock_Polo
-	attr_reader :name, :twitter_name
+	attr_reader :name, :twitter_name, :usd_pair_name
 	attr_writer :pair
 
 	def initialize(key, secret, pair = nil)
 		@name = 'poloniex'
 		@twitter_name = 'poloniex'
+		@usd_pair_name = 'USDT'
 
 		@key = key
 		@secret = secret
@@ -19,8 +20,8 @@ class Stock_Polo
 	end
 
 	def candles(from, to = 9999999999)
-		if @pair == 'USDT'
-			currency_pair = usdt_pair
+		if @pair == @usd_pair_name
+			currency_pair = usd_pair
 		else
 			currency_pair = btc_pair
 		end
@@ -148,7 +149,7 @@ class Stock_Polo
 		"BTC_#{@pair}"
 	end
 
-	def usdt_pair
+	def usd_pair
 		'USDT_BTC'
 	end
 

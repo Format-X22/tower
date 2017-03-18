@@ -15,12 +15,10 @@ class Algorithm_Pair_Executor < Algorithm_Abstract
 	end
 
 	def tick
-		@candles.sync
 		@candles.last_candle
 	end
 
 	def low_tick
-		@candles.sync
 		@candles.low_from(now - profile.low_reset_time)
 	end
 
