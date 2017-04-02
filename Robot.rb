@@ -1,5 +1,5 @@
 PAIRS = {
-	BELA: 7000
+	#
 }
 
 require 'date'
@@ -10,6 +10,7 @@ require 'json'
 require 'twitter'
 
 class Robot
+	attr_reader :pair
 
 	def initialize
 		while true
@@ -17,9 +18,10 @@ class Robot
 				connect_to_twitter
 				check_delisting
 				trade
+				sleep 0.5
 			rescue Exception => exception
 				p exception.message
-				sleep 5000
+				sleep 5
 			end
 		end
 	end
@@ -33,65 +35,63 @@ class Robot
 		end
 	end
 
+	def check_delisting
+		@twitter.user_timeline('poloniex').each do |tweet|
+			if tweet.text.match('delist')
+				pairs do
+					sell if /\s#{pair}|,#{pair}|:#{pair}/.match(tweet.text) and money > 0
+				end
+			end
+		end
+	end
+
 	def trade
-		pairs.each do |pair|
-			@pair = pair
+		pairs do
 			sell if (money > 0) and (rate >= target)
 		end
 	end
 
 	def rate
-		ticker["BTC_#{@pair}"]['last']
+		ticker[pair_trade_name]['last'].to_f
 	end
 
 	def target
-		PAIRS[@pair]
+		PAIRS[pair].to_f
 	end
 
 	def ticker
-		public_api_call({
-			command: 'returnTicker'
-		})
+		public_api(command: 'returnTicker')
 	end
 
 	def money
-		private_api_call({
-			command: 'returnAvailableAccountBalances'
-		})['exchange']
+		api(command: 'returnAvailableAccountBalances')['exchange'][pair.to_s].to_f
 	end
 
 	def sell
-		private_api_call({
+		api(
 			command:      'sell',
-			currencyPair: "BTC_#{@pair}",
-			rate:         '0.00000001',
-			amount:       '%1.8f' % money[@pair]
-		})
+			currencyPair: pair_trade_name,
+			rate:         '%1.8f' % (rate * 0.75),
+			amount:       '%1.8f' % money
+		)
 	end
 
-	def pairs
-		PAIRS.keys.map do |key|
-			key.to_s
+	def pairs(&block)
+		PAIRS.keys.each do |pair|
+			@pair = pair
+			block.call
 		end
 	end
 
-	def public_api_call(config)
+	def public_api(config)
 		params = URI.encode_www_form(config)
 		response = Net::HTTP.get(URI("https://poloniex.com/public?#{params}"))
 		result = JSON.parse(response)
 
-		unless result
-			raise "Empty response #{config}"
-		end
-
-		if result.is_a?(Hash) and result['error']
-			raise "#{result['error']} - #{config}"
-		end
-
-		result
+		check_request_result(result, config)
 	end
 
-	def private_api_call(config)
+	def api(config)
 		config[:nonce] = (Time.now.to_f * 1000).to_i
 
 		uri = URI('https://poloniex.com/tradingApi')
@@ -100,10 +100,14 @@ class Robot
 		request.set_form_data(config)
 		result = nil
 
-		Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+		Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
 			result = JSON.parse(http.request(request).body)
 		end
 
+		check_request_result(result, config)
+	end
+
+	def check_request_result(result, config)
 		unless result
 			raise "Empty response #{config}"
 		end
@@ -117,44 +121,21 @@ class Robot
 
 	def request_headers(body)
 		{
-			'Key': 'VFYTOUL8-QMXD4PCQ-LDEMD2GG-MJD9IXY3',
-			'Sign': sign(body),
-			'Content-Type': 'application/json'
+			'Key' => 'VFYTOUL8-QMXD4PCQ-LDEMD2GG-MJD9IXY3',
+			'Content-Type' => 'application/json',
+			'Sign' => OpenSSL::HMAC.hexdigest(
+				OpenSSL::Digest.new('sha512'),
+				'9f7d888231869a591a414a691ec43a9eb02479016b610da7903edc8d656ac713a0beb163645ae963cb2430d476524572a941d33b200b666dae470cf52e8ce22e',
+				URI.encode_www_form(body)
+			)
 		}
 	end
 
-	def sign(body)
-		OpenSSL::HMAC.hexdigest(
-			OpenSSL::Digest.new('sha512'),
-			'9f7d888231869a591a414a691ec43a9eb02479016b610da7903edc8d656ac713a0beb163645ae963cb2430d476524572a941d33b200b666dae470cf52e8ce22e',
-			URI.encode_www_form(body)
-		)
-	end
-
-	def check_delisting
-		tweets.each do |tweet|
-			if delist_tweet(tweet)
-				delisted_pairs(tweet).each do |pair|
-					@pair = pair
-					sell
-				end
-			end
-		end
-	end
-
-	def tweets
-		@twitter.user_timeline('poloniex')
-	end
-
-	def delist_tweet(tweet)
-		tweet.text.match('delist')
-	end
-
-	def delisted_pairs(tweet)
-		pairs.select do |pair|
-			@pair = pair
-
-			/\s#{@pair}|,#{@pair}|:#{@pair}/.match(tweet.text) and money > 0
+	def pair_trade_name
+		if pair == 'BTC'
+			'USDT_BTC'
+		else
+			"BTC_#{pair}"
 		end
 	end
 
