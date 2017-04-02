@@ -22,10 +22,8 @@ class Robot
 
 	def trade
 		connect_to_twitter
-
-		check_delisting do
-			trade_pair
-		end
+		check_delisting
+		trade_pair
 	end
 
 	def trade_pair
@@ -138,18 +136,6 @@ class Robot
 			'Content-Type': 'application/json'
 		}
 	end
-	
-
-
-
-
-
-
-
-
-	def pair_orders(pair, all_orders)
-		all_orders["BTC_#{pair}"]
-	end
 
 	def num(number)
 		number = (number or 0)
@@ -157,54 +143,37 @@ class Robot
 		BigDecimal.new(number.to_s)
 	end
 
-	def check_de_listing
-		pairs = @database.pairs
-		money = @polo.money
-		status = 'ok'
-
-		@twitter.user_timeline('poloniex').each do |tweet|
-			if tweet.text.match('delist')
-				de_listed = parse_de_listing_pairs(tweet.text, pairs, money)
-
-				if de_listed.length > 0
-					panic_sell(de_listed, money)
-					status = 'de_listing'
+	def check_delisting
+		tweets.each do |tweet|
+			if delist_tweet(tweet)
+				delisted_pairs(tweet.text).each do |pair|
+					@pair = pair
+					sell
 				end
 			end
 		end
-
-		status
 	end
 
-	private
+	def tweets
+		@twitter.user_timeline('poloniex')
+	end
 
-	def parse_de_listing_pairs(text, pairs, money)
-		de_listed = []
-		all_orders = @polo.orders
+	def delist_tweet(tweet)
+		tweet.text.match('delist')
+	end
 
-		pairs.each do |pair|
-			if /\s#{pair}|,#{pair}|:#{pair}/.match(text)
-				if num(money[pair]) > 0 or pair_orders(pair, all_orders).length > 0
-					de_listed.push(pair)
-				else
-					@database.stop_pair_trade
-				end
-			end
+	def delisted_pairs(text)
+		pairs.select do |pair|
+			@pair = pair
+
+			/\s#{@pair}|,#{@pair}|:#{@pair}/.match(text) and money > 0
 		end
-
-		de_listed
 	end
 
-	def panic_sell(pairs, money)
-		all_orders = @polo.orders
-
+	def panic_sell(pairs)
 		pairs.each do |pair|
-			begin
-				@pair = pair
-				sell
-			rescue Exception => exception
-				p "#{exception.message} --- #{exception.backtrace.inspect}"
-			end
+			@pair = pair
+			sell
 		end
 	end
 
