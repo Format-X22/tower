@@ -1,9 +1,12 @@
+PAIRS = {
+	BELA: 7000
+}
+
 require 'date'
 require 'uri'
 require 'openssl'
 require 'net/http'
 require 'json'
-require 'bigdecimal'
 require 'twitter'
 
 class Robot
@@ -11,28 +14,12 @@ class Robot
 	def initialize
 		while true
 			begin
+				connect_to_twitter
+				check_delisting
 				trade
 			rescue Exception => exception
 				p exception.message
-
 				sleep 5000
-			end
-		end
-	end
-
-	def trade
-		connect_to_twitter
-		check_delisting
-		trade_pair
-	end
-
-	def trade_pair
-		pairs.each do |pair|
-			@pair = pair
-			money = self.money
-
-			if money and (rate >= target)
-				sell
 			end
 		end
 	end
@@ -46,6 +33,13 @@ class Robot
 		end
 	end
 
+	def trade
+		pairs.each do |pair|
+			@pair = pair
+			sell if (money > 0) and (rate >= target)
+		end
+	end
+
 	def rate
 		ticker["BTC_#{@pair}"]['last']
 	end
@@ -54,35 +48,31 @@ class Robot
 		PAIRS[@pair]
 	end
 
-	def money
-		private_api_call({
-							 command: 'returnAvailableAccountBalances'
-						 })['exchange']
-	end
-
-	def sell
-		private_api_call({
-			command:      'sell',
-			currencyPair: "BTC_#{@pair}",
-			rate:         readable(0.00000001),
-			amount:       readable(money)
-			})
-	end
-
 	def ticker
 		public_api_call({
 			command: 'returnTicker'
 		})
 	end
 
-	def pairs
-		PAIRS.map do |key, value|
-			key.to.s
-		end
+	def money
+		private_api_call({
+			command: 'returnAvailableAccountBalances'
+		})['exchange']
 	end
 
-	def readable(num)
-		'%1.8f' % num.to_f
+	def sell
+		private_api_call({
+			command:      'sell',
+			currencyPair: "BTC_#{@pair}",
+			rate:         '0.00000001',
+			amount:       '%1.8f' % money[@pair]
+		})
+	end
+
+	def pairs
+		PAIRS.keys.map do |key|
+			key.to_s
+		end
 	end
 
 	def public_api_call(config)
@@ -126,27 +116,25 @@ class Robot
 	end
 
 	def request_headers(body)
-		params = URI.encode_www_form(body)
-		digest = OpenSSL::Digest.new('sha512')
-		secret = '9f7d888231869a591a414a691ec43a9eb02479016b610da7903edc8d656ac713a0beb163645ae963cb2430d476524572a941d33b200b666dae470cf52e8ce22e'
-
 		{
 			'Key': 'VFYTOUL8-QMXD4PCQ-LDEMD2GG-MJD9IXY3',
-			'Sign': OpenSSL::HMAC.hexdigest(digest, secret, params),
+			'Sign': sign(body),
 			'Content-Type': 'application/json'
 		}
 	end
 
-	def num(number)
-		number = (number or 0)
-
-		BigDecimal.new(number.to_s)
+	def sign(body)
+		OpenSSL::HMAC.hexdigest(
+			OpenSSL::Digest.new('sha512'),
+			'9f7d888231869a591a414a691ec43a9eb02479016b610da7903edc8d656ac713a0beb163645ae963cb2430d476524572a941d33b200b666dae470cf52e8ce22e',
+			URI.encode_www_form(body)
+		)
 	end
 
 	def check_delisting
 		tweets.each do |tweet|
 			if delist_tweet(tweet)
-				delisted_pairs(tweet.text).each do |pair|
+				delisted_pairs(tweet).each do |pair|
 					@pair = pair
 					sell
 				end
@@ -162,19 +150,14 @@ class Robot
 		tweet.text.match('delist')
 	end
 
-	def delisted_pairs(text)
+	def delisted_pairs(tweet)
 		pairs.select do |pair|
 			@pair = pair
 
-			/\s#{@pair}|,#{@pair}|:#{@pair}/.match(text) and money > 0
-		end
-	end
-
-	def panic_sell(pairs)
-		pairs.each do |pair|
-			@pair = pair
-			sell
+			/\s#{@pair}|,#{@pair}|:#{@pair}/.match(tweet.text) and money > 0
 		end
 	end
 
 end
+
+Robot.new
